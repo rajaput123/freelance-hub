@@ -4,8 +4,7 @@ import { Job } from "@/data/types";
 import JobCard from "@/components/JobCard";
 import JobDetailSheet from "@/components/JobDetailSheet";
 import AddJobSheet from "@/components/AddJobSheet";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const statusFilters = ["all", "scheduled", "in_progress", "completed"] as const;
@@ -20,32 +19,45 @@ const JobsPage = () => {
   const { jobs } = useAppData();
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [filter, setFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
 
-  const filtered = filter === "all" ? jobs : jobs.filter(j => j.status === filter);
+  const filtered = jobs
+    .filter(j => filter === "all" || j.status === filter)
+    .filter(j => !search || j.clientName.toLowerCase().includes(search.toLowerCase()) || j.service.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="min-h-screen pb-28">
-      <div className="sticky top-0 z-10 glass border-b border-border/50 px-5 pt-12 pb-4">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold tracking-tight">Jobs</h1>
-          <AddJobSheet
-            trigger={
-              <Button size="icon" className="rounded-xl h-10 w-10 gradient-primary shadow-elevated border-0">
-                <Plus className="h-5 w-5" />
-              </Button>
-            }
-          />
+    <div className="min-h-screen pb-24 bg-background">
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 pt-11 pb-3">
+        <h1 className="text-xl font-bold mb-3">Jobs</h1>
+        
+        {/* Search bar - Swiggy style */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex-1 flex items-center gap-2 bg-background rounded-xl px-3 h-10 border border-border">
+            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+            <input
+              type="text"
+              placeholder="Search jobs or clients..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="flex-1 bg-transparent text-[13px] outline-none placeholder:text-muted-foreground"
+            />
+          </div>
+          <button className="h-10 w-10 rounded-xl bg-background border border-border flex items-center justify-center shrink-0">
+            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+          </button>
         </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-none">
+
+        {/* Filter pills */}
+        <div className="flex gap-2 overflow-x-auto no-scrollbar">
           {statusFilters.map(f => (
             <button
               key={f}
               onClick={() => setFilter(f)}
               className={cn(
-                "rounded-xl px-4 py-2 text-xs font-semibold whitespace-nowrap transition-all duration-200 border",
+                "rounded-full px-4 py-1.5 text-[12px] font-semibold whitespace-nowrap transition-all border",
                 filter === f
-                  ? "gradient-primary text-primary-foreground border-transparent shadow-card"
-                  : "bg-card text-muted-foreground border-border/60 hover:text-foreground"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-muted-foreground border-border hover:text-foreground"
               )}
             >
               {filterLabels[f]}
@@ -54,14 +66,11 @@ const JobsPage = () => {
         </div>
       </div>
 
-      <div className="px-5 mt-4 space-y-3">
+      <div className="px-4 mt-3 space-y-2.5">
         {filtered.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
-            <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
-              <Plus className="h-6 w-6" />
-            </div>
-            <p className="font-medium">No jobs found</p>
-            <p className="text-sm mt-1">Create your first job to get started</p>
+            <p className="font-semibold text-[14px]">No jobs found</p>
+            <p className="text-[12px] mt-1">Try adjusting your filters</p>
           </div>
         ) : (
           filtered.map(job => (

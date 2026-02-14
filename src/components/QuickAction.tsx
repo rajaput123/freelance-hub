@@ -5,22 +5,19 @@ interface QuickActionProps {
   icon: LucideIcon;
   label: string;
   onClick: () => void;
-  variant?: "primary" | "secondary";
+  color?: string;
 }
 
-const QuickAction = ({ icon: Icon, label, onClick, variant = "secondary" }: QuickActionProps) => {
+const QuickAction = ({ icon: Icon, label, onClick, color = "bg-primary/10 text-primary" }: QuickActionProps) => {
   return (
     <button
       onClick={onClick}
-      className={cn(
-        "flex flex-col items-center gap-2 rounded-2xl p-4 transition-all duration-200 active:scale-95 min-w-[76px]",
-        variant === "primary"
-          ? "gradient-primary text-primary-foreground shadow-elevated"
-          : "bg-card border border-border/60 text-foreground shadow-card hover:shadow-elevated"
-      )}
+      className="flex flex-col items-center gap-1.5 transition-all active:scale-90 min-w-[64px]"
     >
-      <Icon className="h-5 w-5" />
-      <span className="text-[11px] font-semibold leading-tight text-center">{label}</span>
+      <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center", color)}>
+        <Icon className="h-[22px] w-[22px]" strokeWidth={1.8} />
+      </div>
+      <span className="text-[11px] font-semibold text-foreground/80 leading-tight text-center">{label}</span>
     </button>
   );
 };
