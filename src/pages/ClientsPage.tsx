@@ -1,10 +1,12 @@
 import { useAppData } from "@/context/AppContext";
 import AddClientSheet from "@/components/AddClientSheet";
-import { Search, Phone, MapPin, Briefcase, ChevronRight } from "lucide-react";
+import { Search, Phone, MapPin, Briefcase, ChevronRight, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const ClientsPage = () => {
   const { clients, jobs } = useAppData();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
   const filtered = clients.filter(c =>
@@ -14,7 +16,12 @@ const ClientsPage = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="sticky top-0 z-10 bg-card border-b border-border px-4 pt-12 pb-3">
-        <h1 className="text-lg font-bold mb-3">Clients</h1>
+        <div className="flex items-center gap-3 mb-3">
+          <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <h1 className="text-lg font-bold">Clients</h1>
+        </div>
         <div className="flex items-center gap-2 bg-muted rounded-lg px-3 h-9">
           <Search className="h-4 w-4 text-muted-foreground shrink-0" />
           <input

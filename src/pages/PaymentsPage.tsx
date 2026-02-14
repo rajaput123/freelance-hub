@@ -1,5 +1,6 @@
 import { useAppData } from "@/context/AppContext";
-import { ArrowDownLeft, Wallet, TrendingUp, Banknote, Smartphone, Building2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ArrowDownLeft, ArrowLeft, Wallet, TrendingUp, Banknote, Smartphone, Building2 } from "lucide-react";
 
 const methodIcons: Record<string, typeof Banknote> = {
   cash: Banknote,
@@ -9,6 +10,7 @@ const methodIcons: Record<string, typeof Banknote> = {
 
 const PaymentsPage = () => {
   const { payments, jobs, events } = useAppData();
+  const navigate = useNavigate();
 
   const totalEarnings = payments.reduce((s, p) => s + p.amount, 0);
   const totalPending = jobs.reduce((s, j) => s + Math.max(0, j.amount - j.paidAmount), 0)
@@ -22,8 +24,13 @@ const PaymentsPage = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="bg-primary px-4 pt-12 pb-5">
-        <h1 className="text-lg font-bold text-primary-foreground">Earnings</h1>
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 pt-12 pb-3">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <h1 className="text-lg font-bold">Finance & Accounts</h1>
+        </div>
       </div>
 
       {/* Summary */}
