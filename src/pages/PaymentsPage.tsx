@@ -58,8 +58,7 @@ const PaymentsPage = () => {
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="h-2 bg-muted mt-4" />
+      <div className="mt-4" />
 
       {/* Transactions */}
       <div className="px-4 mt-4">
