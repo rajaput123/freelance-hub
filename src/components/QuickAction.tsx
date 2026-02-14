@@ -13,14 +13,14 @@ const QuickAction = ({ icon: Icon, label, onClick, variant = "secondary" }: Quic
     <button
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center gap-2 rounded-2xl p-4 transition-all active:scale-95 min-w-[80px]",
+        "flex flex-col items-center gap-2 rounded-2xl p-4 transition-all duration-200 active:scale-95 min-w-[76px]",
         variant === "primary"
-          ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-          : "bg-card border border-border text-foreground shadow-sm"
+          ? "gradient-primary text-primary-foreground shadow-elevated"
+          : "bg-card border border-border/60 text-foreground shadow-card hover:shadow-elevated"
       )}
     >
-      <Icon className="h-6 w-6" />
-      <span className="text-xs font-medium leading-tight text-center">{label}</span>
+      <Icon className="h-5 w-5" />
+      <span className="text-[11px] font-semibold leading-tight text-center">{label}</span>
     </button>
   );
 };

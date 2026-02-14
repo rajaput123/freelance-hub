@@ -66,20 +66,20 @@ const AddJobSheet = ({ trigger }: AddJobSheetProps) => {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {trigger || (
-          <Button size="lg" className="gap-2 rounded-xl">
+          <Button size="lg" className="gap-2 rounded-xl gradient-primary border-0">
             <Plus className="h-5 w-5" />
             New Job
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent side="bottom" className="rounded-t-3xl max-h-[90vh] overflow-y-auto">
+      <SheetContent side="bottom" className="rounded-t-[2rem] max-h-[90vh] overflow-y-auto border-t border-border/50">
         <SheetHeader>
-          <SheetTitle className="text-left">Quick Job</SheetTitle>
+          <SheetTitle className="text-left text-lg tracking-tight">Quick Job</SheetTitle>
         </SheetHeader>
-        <div className="mt-4 space-y-3">
+        <div className="mt-5 space-y-3">
           <div className="flex gap-2">
             <Select value={clientId} onValueChange={setClientId}>
-              <SelectTrigger className="h-12 rounded-xl text-base flex-1">
+              <SelectTrigger className="h-12 rounded-xl text-base flex-1 border-border/60">
                 <SelectValue placeholder="Select client" />
               </SelectTrigger>
               <SelectContent>
@@ -89,13 +89,13 @@ const AddJobSheet = ({ trigger }: AddJobSheetProps) => {
               </SelectContent>
             </Select>
             <AddClientSheet
-              trigger={<Button variant="outline" size="icon" className="h-12 w-12 rounded-xl shrink-0"><Plus className="h-5 w-5" /></Button>}
+              trigger={<Button variant="outline" size="icon" className="h-12 w-12 rounded-xl shrink-0 border-border/60"><Plus className="h-5 w-5" /></Button>}
               onClientAdded={handleClientAdded}
             />
           </div>
 
           <Select value={service} onValueChange={handleServiceChange}>
-            <SelectTrigger className="h-12 rounded-xl text-base">
+            <SelectTrigger className="h-12 rounded-xl text-base border-border/60">
               <SelectValue placeholder="Select service" />
             </SelectTrigger>
             <SelectContent>
@@ -106,28 +106,28 @@ const AddJobSheet = ({ trigger }: AddJobSheetProps) => {
           </Select>
 
           <div className="flex gap-2">
-            <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-12 rounded-xl text-base flex-1" />
-            <Input type="time" value={time} onChange={e => setTime(e.target.value)} className="h-12 rounded-xl text-base w-32" />
+            <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-12 rounded-xl text-base flex-1 border-border/60" />
+            <Input type="time" value={time} onChange={e => setTime(e.target.value)} className="h-12 rounded-xl text-base w-32 border-border/60" />
           </div>
 
           <Input
             placeholder="Location"
             value={location || selectedClient?.location || ""}
             onChange={e => setLocation(e.target.value)}
-            className="h-12 rounded-xl text-base"
+            className="h-12 rounded-xl text-base border-border/60"
           />
 
           <Input
             placeholder="Amount (₹)"
             value={amount}
             onChange={e => setAmount(e.target.value)}
-            className="h-12 rounded-xl text-base"
+            className="h-12 rounded-xl text-base border-border/60"
             type="number"
           />
 
-          <Textarea placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} className="rounded-xl text-base" rows={2} />
+          <Textarea placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} className="rounded-xl text-base border-border/60" rows={2} />
 
-          <Button onClick={handleSave} className="w-full h-12 rounded-xl text-base font-semibold">
+          <Button onClick={handleSave} className="w-full h-12 rounded-xl text-base font-semibold gradient-primary border-0 shadow-card">
             Create Job
           </Button>
         </div>

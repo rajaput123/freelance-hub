@@ -36,45 +36,45 @@ const AddClientSheet = ({ trigger, onClientAdded }: AddClientSheetProps) => {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {trigger || (
-          <Button size="lg" className="gap-2 rounded-xl">
+          <Button size="lg" className="gap-2 rounded-xl gradient-primary border-0">
             <UserPlus className="h-5 w-5" />
             Add Client
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent side="bottom" className="rounded-t-3xl max-h-[85vh]">
+      <SheetContent side="bottom" className="rounded-t-[2rem] max-h-[85vh] border-t border-border/50">
         <SheetHeader>
-          <SheetTitle className="text-left">New Client</SheetTitle>
+          <SheetTitle className="text-left text-lg tracking-tight">New Client</SheetTitle>
         </SheetHeader>
-        <div className="mt-4 space-y-4">
+        <div className="mt-5 space-y-4">
           <Input
             placeholder="Client name *"
             value={name}
             onChange={e => setName(e.target.value)}
-            className="h-12 rounded-xl text-base"
+            className="h-12 rounded-xl text-base border-border/60"
             autoFocus
           />
           <Input
             placeholder="Phone number"
             value={phone}
             onChange={e => setPhone(e.target.value)}
-            className="h-12 rounded-xl text-base"
+            className="h-12 rounded-xl text-base border-border/60"
             type="tel"
           />
           <Input
             placeholder="Location"
             value={location}
             onChange={e => setLocation(e.target.value)}
-            className="h-12 rounded-xl text-base"
+            className="h-12 rounded-xl text-base border-border/60"
           />
           <Textarea
             placeholder="Notes (optional)"
             value={notes}
             onChange={e => setNotes(e.target.value)}
-            className="rounded-xl text-base"
+            className="rounded-xl text-base border-border/60"
             rows={2}
           />
-          <Button onClick={handleSave} className="w-full h-12 rounded-xl text-base font-semibold">
+          <Button onClick={handleSave} className="w-full h-12 rounded-xl text-base font-semibold gradient-primary border-0 shadow-card">
             Save Client
           </Button>
         </div>
