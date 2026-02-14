@@ -1,6 +1,6 @@
 import { useAppData } from "@/context/AppContext";
 import { useNavigate } from "react-router-dom";
-import { Briefcase, CalendarPlus, Clock, ChevronRight, Wallet, Users, ClipboardList, Plus, Inbox, Bell, MessageSquare } from "lucide-react";
+import { Briefcase, CalendarPlus, Clock, ChevronRight, Wallet, Users, ClipboardList, Plus, Inbox, Bell, TrendingUp } from "lucide-react";
 import QuickAction from "@/components/QuickAction";
 import JobCard from "@/components/JobCard";
 import JobDetailSheet from "@/components/JobDetailSheet";
@@ -26,54 +26,48 @@ const HomePage = ({ onMenuClick }: HomePageProps) => {
   const totalEarnings = payments.reduce((sum, p) => sum + p.amount, 0);
   const newRequests = jobs.filter(j => j.status === "pending");
   const activeTasks = jobs.filter(j => j.status === "in_progress");
-  const unreadMessages = messages.filter(m => !m.read).length;
 
   const greeting = () => {
     const h = new Date().getHours();
-    if (h < 12) return "Good Morning 👋";
-    if (h < 17) return "Good Afternoon 👋";
-    return "Good Evening 👋";
+    if (h < 12) return "Good Morning ☀️";
+    if (h < 17) return "Good Afternoon";
+    return "Good Evening 🌙";
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-24">
       <PageHeader
         title="Dashboard"
         greeting={greeting()}
         onMenuClick={onMenuClick}
-        action={{ onClick: () => setShowAddJob(true), icon: <Plus className="h-4.5 w-4.5 text-primary-foreground" /> }}
+        action={{ onClick: () => setShowAddJob(true), icon: <Plus className="h-[18px] w-[18px] text-primary-foreground" /> }}
       />
 
       {/* Stats row */}
-      <div className="px-4 -mt-3">
+      <div className="px-4 -mt-4">
         <div className="grid grid-cols-4 gap-2">
-          <div className="bg-card rounded-xl p-2.5 text-center border border-border shadow-sm">
-            <p className="text-lg font-bold">{todayJobs.length}</p>
-            <p className="text-[9px] text-muted-foreground font-medium mt-0.5">TODAY</p>
-          </div>
-          <div className="bg-card rounded-xl p-2.5 text-center border border-border shadow-sm">
-            <p className="text-lg font-bold text-primary">{newRequests.length}</p>
-            <p className="text-[9px] text-muted-foreground font-medium mt-0.5">NEW</p>
-          </div>
-          <div className="bg-card rounded-xl p-2.5 text-center border border-border shadow-sm">
-            <p className="text-lg font-bold text-warning">{pendingPayments.length}</p>
-            <p className="text-[9px] text-muted-foreground font-medium mt-0.5">UNPAID</p>
-          </div>
-          <div className="bg-card rounded-xl p-2.5 text-center border border-border shadow-sm">
-            <p className="text-lg font-bold text-success">₹{(totalEarnings / 1000).toFixed(0)}k</p>
-            <p className="text-[9px] text-muted-foreground font-medium mt-0.5">EARNED</p>
-          </div>
+          {[
+            { value: todayJobs.length, label: "TODAY", color: "text-foreground" },
+            { value: newRequests.length, label: "NEW", color: "text-primary" },
+            { value: pendingPayments.length, label: "UNPAID", color: "text-warning" },
+            { value: `₹${(totalEarnings / 1000).toFixed(0)}k`, label: "EARNED", color: "text-success" },
+          ].map((s, i) => (
+            <div key={i} className="bg-card rounded-2xl p-3 text-center shadow-soft">
+              <p className={`text-xl font-bold ${s.color}`} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{s.value}</p>
+              <p className="text-[9px] text-muted-foreground font-semibold mt-1 tracking-wider">{s.label}</p>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="px-4 mt-5">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Quick Actions</p>
+      <div className="px-4 mt-6">
+        <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-3">Quick Actions</p>
         <div className="grid grid-cols-4 gap-3">
-          <QuickAction icon={ClipboardList} label="Request" onClick={() => setShowAddJob(true)} color="bg-primary/8 text-primary" />
-          <QuickAction icon={Users} label="Clients" onClick={() => navigate("/more/clients")} color="bg-info/8 text-info" />
-          <QuickAction icon={CalendarPlus} label="Events" onClick={() => navigate("/more/events")} color="bg-success/8 text-success" />
-          <QuickAction icon={Wallet} label="Finance" onClick={() => navigate("/more/finance")} color="bg-warning/8 text-warning" />
+          <QuickAction icon={ClipboardList} label="Request" onClick={() => setShowAddJob(true)} color="bg-primary/10 text-primary" />
+          <QuickAction icon={Users} label="Clients" onClick={() => navigate("/more/clients")} color="bg-info/10 text-info" />
+          <QuickAction icon={CalendarPlus} label="Events" onClick={() => navigate("/more/events")} color="bg-success/10 text-success" />
+          <QuickAction icon={Wallet} label="Finance" onClick={() => navigate("/more/finance")} color="bg-warning/10 text-warning" />
         </div>
       </div>
 
@@ -82,30 +76,30 @@ const HomePage = ({ onMenuClick }: HomePageProps) => {
         <section className="px-4 mt-5">
           <button
             onClick={() => navigate("/requests")}
-            className="w-full bg-accent rounded-xl p-3 flex items-center gap-3 active:scale-[0.99] transition-transform"
+            className="w-full gradient-primary rounded-2xl p-3.5 flex items-center gap-3 active:scale-[0.98] transition-all duration-200 shadow-glow"
           >
-            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Inbox className="h-5 w-5 text-primary" />
+            <div className="h-10 w-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center shrink-0">
+              <Inbox className="h-5 w-5 text-primary-foreground" />
             </div>
             <div className="flex-1 text-left">
-              <p className="font-semibold text-sm">{newRequests.length} new request{newRequests.length > 1 ? "s" : ""}</p>
-              <p className="text-xs text-muted-foreground">Tap to review & approve</p>
+              <p className="font-bold text-sm text-primary-foreground">{newRequests.length} new request{newRequests.length > 1 ? "s" : ""}</p>
+              <p className="text-[11px] text-primary-foreground/70">Tap to review & approve</p>
             </div>
-            <ChevronRight className="h-4 w-4 text-primary" />
+            <ChevronRight className="h-5 w-5 text-primary-foreground/70" />
           </button>
         </section>
       )}
 
       {/* Active tasks */}
       {activeTasks.length > 0 && (
-        <section className="px-4 mt-4">
+        <section className="px-4 mt-5">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-foreground">Active Tasks</h2>
-            <button onClick={() => navigate("/requests")} className="text-xs text-primary font-semibold flex items-center">
+            <button onClick={() => navigate("/requests")} className="text-xs text-primary font-semibold flex items-center gap-0.5">
               See all <ChevronRight className="h-3.5 w-3.5" />
             </button>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {activeTasks.slice(0, 2).map(job => (
               <JobCard key={job.id} job={job} onClick={() => setSelectedJob(job)} />
             ))}
@@ -114,21 +108,23 @@ const HomePage = ({ onMenuClick }: HomePageProps) => {
       )}
 
       {/* Today's Schedule */}
-      <section className="px-4 mt-5">
+      <section className="px-4 mt-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-bold text-foreground">Today's Schedule</h2>
-          <button onClick={() => navigate("/calendar")} className="text-xs text-primary font-semibold flex items-center">
+          <button onClick={() => navigate("/calendar")} className="text-xs text-primary font-semibold flex items-center gap-0.5">
             See all <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
         {todayJobs.length === 0 ? (
-          <div className="border border-dashed border-border rounded-xl p-6 text-center">
-            <Clock className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm font-medium text-foreground">No jobs today</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Tap + to create a request</p>
+          <div className="bg-card rounded-2xl p-8 text-center shadow-soft">
+            <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+              <Clock className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-bold text-foreground">No jobs today</p>
+            <p className="text-xs text-muted-foreground mt-1">Tap + to create a request</p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {todayJobs.map(job => (
               <JobCard key={job.id} job={job} onClick={() => setSelectedJob(job)} />
             ))}
@@ -138,14 +134,14 @@ const HomePage = ({ onMenuClick }: HomePageProps) => {
 
       {/* Upcoming */}
       {upcomingJobs.length > 0 && (
-        <section className="px-4 mt-5">
+        <section className="px-4 mt-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-foreground">Upcoming</h2>
-            <button onClick={() => navigate("/calendar")} className="text-xs text-primary font-semibold flex items-center">
+            <button onClick={() => navigate("/calendar")} className="text-xs text-primary font-semibold flex items-center gap-0.5">
               See all <ChevronRight className="h-3.5 w-3.5" />
             </button>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {upcomingJobs.map(job => (
               <JobCard key={job.id} job={job} compact onClick={() => setSelectedJob(job)} />
             ))}
@@ -155,24 +151,24 @@ const HomePage = ({ onMenuClick }: HomePageProps) => {
 
       {/* Pending Payments */}
       {pendingPayments.length > 0 && (
-        <section className="px-4 mt-5">
+        <section className="px-4 mt-6">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-bold text-foreground">Collect Payments</h2>
-            <button onClick={() => navigate("/more/finance")} className="text-xs text-primary font-semibold flex items-center">
+            <button onClick={() => navigate("/more/finance")} className="text-xs text-primary font-semibold flex items-center gap-0.5">
               See all <ChevronRight className="h-3.5 w-3.5" />
             </button>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {pendingPayments.slice(0, 3).map(job => (
-              <div key={job.id} onClick={() => setSelectedJob(job)} className="flex items-center gap-3 bg-card border border-border rounded-xl p-3 active:bg-muted/40 transition-colors cursor-pointer">
-                <div className="h-9 w-9 rounded-full bg-warning/8 flex items-center justify-center shrink-0">
-                  <Wallet className="h-4 w-4 text-warning" />
+              <div key={job.id} onClick={() => setSelectedJob(job)} className="flex items-center gap-3 bg-card rounded-2xl p-3.5 shadow-soft active:scale-[0.98] transition-all duration-200 cursor-pointer">
+                <div className="h-10 w-10 rounded-2xl bg-warning/10 flex items-center justify-center shrink-0">
+                  <Wallet className="h-5 w-5 text-warning" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm truncate">{job.clientName}</p>
-                  <p className="text-xs text-muted-foreground">{job.service}</p>
+                  <p className="font-bold text-sm truncate">{job.clientName}</p>
+                  <p className="text-xs text-muted-foreground font-medium">{job.service}</p>
                 </div>
-                <p className="text-sm font-bold text-warning shrink-0">₹{(job.amount - job.paidAmount).toLocaleString()}</p>
+                <p className="text-sm font-bold text-warning shrink-0" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>₹{(job.amount - job.paidAmount).toLocaleString()}</p>
               </div>
             ))}
           </div>

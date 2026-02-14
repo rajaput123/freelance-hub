@@ -14,61 +14,59 @@ const ClientsPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 pt-3 pb-3">
+    <div className="min-h-screen bg-background pb-24">
+      <div className="sticky top-0 z-10 glass px-4 pt-3 pb-3">
         <div className="flex items-center gap-3 mb-3">
-          <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+          <button onClick={() => navigate(-1)} className="h-9 w-9 rounded-xl bg-muted flex items-center justify-center active:scale-95 transition-transform">
             <ArrowLeft className="h-4 w-4" />
           </button>
-          <h1 className="text-lg font-bold">Clients</h1>
+          <h1 className="text-lg font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Clients</h1>
         </div>
-        <div className="flex items-center gap-2 bg-muted rounded-lg px-3 h-9">
+        <div className="flex items-center gap-2 bg-card rounded-xl px-3.5 h-11 shadow-soft">
           <Search className="h-4 w-4 text-muted-foreground shrink-0" />
           <input
             type="text"
             placeholder="Search by name or phone..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground font-medium"
           />
         </div>
       </div>
 
       <div className="px-4 mt-3">
-        <p className="text-xs text-muted-foreground mb-2">{filtered.length} clients</p>
-        <div className="space-y-2">
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2.5">{filtered.length} clients</p>
+        <div className="space-y-2.5">
           {filtered.map(client => {
             const clientJobs = jobs.filter(j => j.clientId === client.id);
             return (
-              <div key={client.id} className="bg-card border border-border rounded-xl p-3 active:bg-muted/40 transition-colors">
+              <div key={client.id} className="bg-card rounded-2xl p-3.5 shadow-soft active:scale-[0.98] transition-all">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/8 text-primary flex items-center justify-center font-semibold text-sm shrink-0">
+                  <div className="h-11 w-11 rounded-2xl gradient-primary text-primary-foreground flex items-center justify-center font-bold text-sm shrink-0 shadow-glow/50">
                     {client.name.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate">{client.name}</p>
-                    <div className="flex items-center gap-3 mt-0.5">
-                      {client.phone && (
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Phone className="h-3 w-3" /> {client.phone}
-                        </p>
-                      )}
-                    </div>
+                    <p className="font-bold text-sm truncate">{client.name}</p>
+                    {client.phone && (
+                      <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5 font-medium">
+                        <Phone className="h-3 w-3" /> {client.phone}
+                      </p>
+                    )}
                   </div>
                   <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
                 </div>
 
                 {client.location && (
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2 ml-[52px]">
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground mt-2.5 ml-[56px]">
                     <MapPin className="h-3 w-3" /> {client.location}
                   </div>
                 )}
 
-                <div className="flex items-center justify-between text-xs mt-2 pt-2 border-t border-border ml-[52px]">
-                  <span className="text-muted-foreground flex items-center gap-1">
+                <div className="flex items-center justify-between text-xs mt-2.5 pt-2.5 border-t border-border ml-[56px]">
+                  <span className="text-muted-foreground flex items-center gap-1 font-medium">
                     <Briefcase className="h-3 w-3" /> {clientJobs.length} jobs
                   </span>
-                  <span className="font-semibold text-sm">₹{client.totalSpent.toLocaleString()}</span>
+                  <span className="font-bold text-sm" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>₹{client.totalSpent.toLocaleString()}</span>
                 </div>
               </div>
             );

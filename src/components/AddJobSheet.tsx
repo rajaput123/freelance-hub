@@ -34,9 +34,7 @@ const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange, initialStatu
   const selectedClient = clients.find(c => c.id === clientId);
   const selectedService = services.find(s => s.name === service);
 
-  const handleClientAdded = (newClientId: string) => {
-    setClientId(newClientId);
-  };
+  const handleClientAdded = (newClientId: string) => { setClientId(newClientId); };
 
   const handleServiceChange = (val: string) => {
     setService(val);
@@ -45,10 +43,7 @@ const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange, initialStatu
   };
 
   const handleSave = () => {
-    if (!clientId || !service || !date) {
-      toast.error("Client, service, and date are required");
-      return;
-    }
+    if (!clientId || !service || !date) { toast.error("Client, service, and date are required"); return; }
     const client = clients.find(c => c.id === clientId);
     addJob({
       clientId,
@@ -71,62 +66,42 @@ const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange, initialStatu
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
       {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
-      <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
+      <SheetContent side="bottom" className="rounded-t-3xl max-h-[85vh] overflow-y-auto border-0">
+        <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />
         <SheetHeader>
-          <SheetTitle className="text-left text-base">New Request</SheetTitle>
+          <SheetTitle className="text-left text-base" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>New Request</SheetTitle>
         </SheetHeader>
         <div className="mt-4 space-y-3">
           <div className="flex gap-2">
             <Select value={clientId} onValueChange={setClientId}>
-              <SelectTrigger className="h-10 rounded-lg text-sm flex-1">
-                <SelectValue placeholder="Select client" />
-              </SelectTrigger>
+              <SelectTrigger className="h-11 rounded-xl text-sm flex-1"><SelectValue placeholder="Select client" /></SelectTrigger>
               <SelectContent>
-                {clients.map(c => (
-                  <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                ))}
+                {clients.map(c => (<SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>))}
               </SelectContent>
             </Select>
             <AddClientSheet
-              trigger={<Button variant="outline" size="icon" className="h-10 w-10 rounded-lg shrink-0"><Plus className="h-4 w-4" /></Button>}
+              trigger={<Button variant="outline" size="icon" className="h-11 w-11 rounded-xl shrink-0"><Plus className="h-4 w-4" /></Button>}
               onClientAdded={handleClientAdded}
             />
           </div>
 
           <Select value={service} onValueChange={handleServiceChange}>
-            <SelectTrigger className="h-10 rounded-lg text-sm">
-              <SelectValue placeholder="Select service" />
-            </SelectTrigger>
+            <SelectTrigger className="h-11 rounded-xl text-sm"><SelectValue placeholder="Select service" /></SelectTrigger>
             <SelectContent>
-              {services.map(s => (
-                <SelectItem key={s.id} value={s.name}>{s.name} — ₹{s.defaultRate}</SelectItem>
-              ))}
+              {services.map(s => (<SelectItem key={s.id} value={s.name}>{s.name} — ₹{s.defaultRate}</SelectItem>))}
             </SelectContent>
           </Select>
 
           <div className="flex gap-2">
-            <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-10 rounded-lg text-sm flex-1" />
-            <Input type="time" value={time} onChange={e => setTime(e.target.value)} className="h-10 rounded-lg text-sm w-28" />
+            <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-11 rounded-xl text-sm flex-1" />
+            <Input type="time" value={time} onChange={e => setTime(e.target.value)} className="h-11 rounded-xl text-sm w-28" />
           </div>
 
-          <Input
-            placeholder="Location"
-            value={location || selectedClient?.location || ""}
-            onChange={e => setLocation(e.target.value)}
-            className="h-10 rounded-lg text-sm"
-          />
+          <Input placeholder="Location" value={location || selectedClient?.location || ""} onChange={e => setLocation(e.target.value)} className="h-11 rounded-xl text-sm" />
+          <Input placeholder="Amount (₹)" value={amount} onChange={e => setAmount(e.target.value)} className="h-11 rounded-xl text-sm" type="number" />
+          <Textarea placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} className="rounded-xl text-sm" rows={2} />
 
-          <Input
-            placeholder="Amount (₹)"
-            value={amount}
-            onChange={e => setAmount(e.target.value)}
-            className="h-10 rounded-lg text-sm"
-            type="number"
-          />
-
-          <Textarea placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} className="rounded-lg text-sm" rows={2} />
-
-          <Button onClick={handleSave} className="w-full h-10 rounded-lg text-sm font-semibold">
+          <Button onClick={handleSave} className="w-full h-12 rounded-xl text-sm font-bold gradient-primary shadow-glow border-0">
             Create Request
           </Button>
         </div>
