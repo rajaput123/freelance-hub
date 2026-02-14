@@ -12,7 +12,7 @@ interface PageHeaderProps {
 
 const PageHeader = ({ title, onMenuClick, greeting, action }: PageHeaderProps) => {
   return (
-    <div className="bg-primary px-4 pt-12 pb-5">
+    <div className="bg-primary px-4 pt-3 pb-5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button

@@ -29,7 +29,7 @@ const JobsPage = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 pt-12 pb-3">
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 pt-3 pb-3">
         <div className="flex items-center gap-3 mb-3">
           <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
             <ArrowLeft className="h-4 w-4" />

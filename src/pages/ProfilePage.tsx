@@ -17,7 +17,7 @@ const ProfilePage = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="bg-primary px-4 pt-12 pb-8">
+      <div className="bg-primary px-4 pt-4 pb-8">
         <button onClick={() => navigate(-1)} className="text-xs text-primary-foreground/70 mb-3">← Back</button>
         <div className="flex items-center gap-4">
           <div className="relative">
