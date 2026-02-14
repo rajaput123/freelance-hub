@@ -37,7 +37,7 @@ const AppSidebar = ({ open, onClose }: AppSidebarProps) => {
         )}
       >
         {/* Header */}
-        <div className="bg-primary px-4 pt-12 pb-5">
+        <div className="bg-primary px-4 pt-4 pb-5">
           <button onClick={onClose} className="absolute top-4 right-4 text-primary-foreground/70">
             <X className="h-5 w-5" />
           </button>
