@@ -62,7 +62,7 @@ const HomePage = () => {
       {/* Quick Actions */}
       <div className="px-4 mt-5">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Quick Actions</p>
-        <div className="flex gap-5 overflow-x-auto no-scrollbar">
+        <div className="grid grid-cols-4 gap-3">
           <QuickAction icon={Briefcase} label="Jobs" onClick={() => navigate("/jobs")} color="bg-primary/8 text-primary" />
           <QuickAction icon={Users} label="Clients" onClick={() => navigate("/clients")} color="bg-info/8 text-info" />
           <QuickAction icon={CalendarPlus} label="Events" onClick={() => navigate("/events")} color="bg-success/8 text-success" />

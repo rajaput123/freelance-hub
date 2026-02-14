@@ -45,7 +45,7 @@ const JobsPage = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar">
+        <div className="flex flex-wrap gap-2">
           {statusFilters.map(f => (
             <button
               key={f}

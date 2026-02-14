@@ -44,7 +44,7 @@ const PaymentsPage = () => {
         </div>
 
         {/* Method breakdown */}
-        <div className="flex gap-2 mt-2">
+        <div className="grid grid-cols-3 gap-2 mt-2">
           {Object.entries(byMethod).map(([method, amount]) => {
             const Icon = methodIcons[method] || Banknote;
             return (
