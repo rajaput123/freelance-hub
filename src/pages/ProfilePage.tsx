@@ -50,13 +50,13 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="h-2 bg-muted mt-4" />
+      {/* Spacer */}
+      <div className="mt-5" />
 
       {/* Menu */}
       <div className="px-4 mt-3">
         {menuItems.map((item, i) => (
-          <button key={i} className="flex items-center gap-3 w-full py-3 text-left active:bg-muted/40 transition-colors border-b border-border last:border-0">
+          <button key={i} className="flex items-center gap-3 w-full py-3 text-left active:bg-muted/40 transition-colors">
             <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
               <item.icon className="h-4 w-4 text-muted-foreground" />
             </div>
@@ -69,8 +69,8 @@ const ProfilePage = () => {
         ))}
       </div>
 
-      {/* Divider */}
-      <div className="h-2 bg-muted mt-1" />
+      {/* Spacer */}
+      <div className="mt-2" />
 
       {/* Logout */}
       <div className="px-4 mt-3">

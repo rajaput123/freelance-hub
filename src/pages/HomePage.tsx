@@ -70,8 +70,7 @@ const HomePage = () => {
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="h-2 bg-muted mt-5" />
+      <div className="mt-5" />
 
       {/* Today's Jobs */}
       <section className="px-4 mt-4">
@@ -99,7 +98,7 @@ const HomePage = () => {
       {/* Upcoming */}
       {upcomingJobs.length > 0 && (
         <>
-          <div className="h-2 bg-muted mt-4" />
+           <div className="mt-4" />
           <section className="px-4 mt-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-bold text-foreground">Upcoming</h2>
@@ -119,7 +118,7 @@ const HomePage = () => {
       {/* Pending Payments */}
       {pendingPayments.length > 0 && (
         <>
-          <div className="h-2 bg-muted mt-4" />
+           <div className="mt-4" />
           <section className="px-4 mt-4">
             <h2 className="text-sm font-bold text-foreground mb-3">Collect Payments</h2>
             <div className="space-y-2">
@@ -143,7 +142,7 @@ const HomePage = () => {
       {/* Active Events */}
       {events.filter(e => e.status !== "completed").length > 0 && (
         <>
-          <div className="h-2 bg-muted mt-4" />
+          <div className="mt-4" />
           <section className="px-4 mt-4 pb-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-bold text-foreground">Active Events</h2>
