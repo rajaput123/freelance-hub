@@ -3,7 +3,8 @@ import { useAppData } from "@/context/AppContext";
 import { Job } from "@/data/types";
 import JobCard from "@/components/JobCard";
 import JobDetailSheet from "@/components/JobDetailSheet";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const statusFilters = ["all", "scheduled", "in_progress", "completed"] as const;
@@ -15,6 +16,7 @@ const filterLabels: Record<string, string> = {
 };
 
 const JobsPage = () => {
+  const navigate = useNavigate();
   const { jobs } = useAppData();
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [filter, setFilter] = useState<string>("all");
@@ -28,7 +30,12 @@ const JobsPage = () => {
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-card border-b border-border px-4 pt-12 pb-3">
-        <h1 className="text-lg font-bold mb-3">Jobs</h1>
+        <div className="flex items-center gap-3 mb-3">
+          <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <h1 className="text-lg font-bold">Jobs</h1>
+        </div>
 
         {/* Search */}
         <div className="flex items-center gap-2 mb-3">

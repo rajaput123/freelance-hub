@@ -1,6 +1,7 @@
 import { useAppData } from "@/context/AppContext";
+import { useNavigate } from "react-router-dom";
 import StatusBadge from "@/components/StatusBadge";
-import { MapPin, Calendar, Users } from "lucide-react";
+import { MapPin, Calendar, Users, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
@@ -9,6 +10,7 @@ import { useState } from "react";
 
 const EventsPage = () => {
   const { events, toggleEventTask, updateEventStatus } = useAppData();
+  const navigate = useNavigate();
   const [tab, setTab] = useState<"active" | "completed">("active");
 
   const activeEvents = events.filter(e => e.status !== "completed");
@@ -18,7 +20,12 @@ const EventsPage = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <div className="sticky top-0 z-10 bg-card border-b border-border px-4 pt-12 pb-3">
-        <h1 className="text-lg font-bold mb-3">Events</h1>
+        <div className="flex items-center gap-3 mb-3">
+          <button onClick={() => navigate(-1)} className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center">
+            <ArrowLeft className="h-4 w-4" />
+          </button>
+          <h1 className="text-lg font-bold">Events / Projects</h1>
+        </div>
         {/* Tabs */}
         <div className="flex bg-muted rounded-lg p-0.5">
           {(["active", "completed"] as const).map(t => (

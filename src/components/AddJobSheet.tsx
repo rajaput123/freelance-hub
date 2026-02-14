@@ -12,11 +12,13 @@ import AddClientSheet from "./AddClientSheet";
 
 interface AddJobSheetProps {
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-const AddJobSheet = ({ trigger }: AddJobSheetProps) => {
+const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange }: AddJobSheetProps) => {
   const { clients, addJob } = useAppData();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [clientId, setClientId] = useState("");
   const [service, setService] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
@@ -24,6 +26,9 @@ const AddJobSheet = ({ trigger }: AddJobSheetProps) => {
   const [location, setLocation] = useState("");
   const [amount, setAmount] = useState("");
   const [notes, setNotes] = useState("");
+
+  const isOpen = controlledOpen ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
 
   const selectedClient = clients.find(c => c.id === clientId);
   const selectedService = services.find(s => s.name === service);
@@ -63,14 +68,8 @@ const AddJobSheet = ({ trigger }: AddJobSheetProps) => {
   };
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        {trigger || (
-          <Button size="lg" className="gap-2 rounded-lg">
-            <Plus className="h-5 w-5" /> New Job
-          </Button>
-        )}
-      </SheetTrigger>
+    <Sheet open={isOpen} onOpenChange={setOpen}>
+      {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
       <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="text-left text-base">New Job</SheetTitle>
