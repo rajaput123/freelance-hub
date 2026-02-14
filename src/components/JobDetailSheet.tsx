@@ -66,9 +66,10 @@ const JobDetailSheet = ({ job, open, onOpenChange }: JobDetailSheetProps) => {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="rounded-t-2xl max-h-[90vh] overflow-y-auto">
+      <SheetContent side="bottom" className="rounded-t-3xl max-h-[90vh] overflow-y-auto border-0">
+        <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />
         <SheetHeader>
-          <SheetTitle className="text-left flex items-center gap-2 text-base">
+          <SheetTitle className="text-left flex items-center gap-2.5 text-base" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
             {job.service}
             <StatusBadge status={job.status} />
           </SheetTitle>
@@ -76,99 +77,95 @@ const JobDetailSheet = ({ job, open, onOpenChange }: JobDetailSheetProps) => {
 
         <div className="mt-4 space-y-3">
           {/* Job info */}
-          <div className="bg-muted/40 rounded-xl p-3 space-y-2">
+          <div className="bg-muted/50 rounded-2xl p-4 space-y-2.5">
             <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-full bg-primary/8 text-primary flex items-center justify-center font-semibold text-sm">
+              <div className="h-10 w-10 rounded-2xl gradient-primary text-primary-foreground flex items-center justify-center font-bold text-sm shadow-glow/50">
                 {job.clientName.charAt(0)}
               </div>
               <div>
-                <p className="font-semibold text-sm">{job.clientName}</p>
-                <p className="text-xs text-muted-foreground">{job.service}</p>
+                <p className="font-bold text-sm">{job.clientName}</p>
+                <p className="text-xs text-muted-foreground font-medium">{job.service}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 text-xs text-muted-foreground ml-12">
-              <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {job.date} · {job.time}</span>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground ml-[52px]">
+              <span className="flex items-center gap-1 bg-card rounded-lg px-2 py-1"><Clock className="h-3 w-3" /> {job.date} · {job.time}</span>
             </div>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground ml-12">
-              <MapPin className="h-3 w-3" /> {job.location}
+            <div className="flex items-center gap-1 text-xs text-muted-foreground ml-[52px]">
+              <span className="flex items-center gap-1 bg-card rounded-lg px-2 py-1"><MapPin className="h-3 w-3" /> {job.location}</span>
             </div>
-            {job.notes && <p className="text-xs text-muted-foreground ml-12 italic">"{job.notes}"</p>}
+            {job.notes && <p className="text-xs text-muted-foreground ml-[52px] italic">"{job.notes}"</p>}
           </div>
 
-          {/* Converted notice */}
           {isConverted && (
-            <div className="bg-info/10 rounded-xl p-3 flex items-center gap-2">
+            <div className="bg-info/10 rounded-2xl p-3.5 flex items-center gap-2.5">
               <ArrowUpRight className="h-4 w-4 text-info" />
-              <p className="text-xs font-medium text-info">This job was converted to an Event/Project</p>
+              <p className="text-xs font-semibold text-info">Converted to Event/Project</p>
             </div>
           )}
 
           {/* Materials */}
           {job.materials.length > 0 && (
-            <div>
-              <h4 className="font-semibold text-xs mb-2 flex items-center gap-1.5"><Package className="h-3.5 w-3.5" /> Materials Used</h4>
+            <div className="bg-card rounded-2xl p-3.5 shadow-soft">
+              <h4 className="font-bold text-xs mb-2 flex items-center gap-1.5"><Package className="h-3.5 w-3.5" /> Materials Used</h4>
               {job.materials.map((m, i) => (
-                <div key={i} className="flex justify-between text-xs py-1.5 border-b border-border last:border-0">
-                  <span>{m.name} × {m.qty}</span>
-                  <span className="font-semibold">₹{m.cost.toLocaleString()}</span>
+                <div key={i} className="flex justify-between text-xs py-2 border-b border-border last:border-0">
+                  <span className="font-medium">{m.name} × {m.qty}</span>
+                  <span className="font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>₹{m.cost.toLocaleString()}</span>
                 </div>
               ))}
             </div>
           )}
 
           {/* Amount */}
-          <div className="flex items-center justify-between bg-primary rounded-xl p-3 text-primary-foreground">
+          <div className="flex items-center justify-between gradient-primary rounded-2xl p-4 text-primary-foreground shadow-glow">
             <div>
-              <p className="text-[10px] uppercase tracking-wider opacity-70">Total</p>
-              <p className="text-xl font-bold">₹{job.amount.toLocaleString()}</p>
+              <p className="text-[10px] uppercase tracking-wider opacity-75 font-semibold">Total</p>
+              <p className="text-2xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>₹{job.amount.toLocaleString()}</p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] uppercase tracking-wider opacity-70">Due</p>
-              <p className="text-xl font-bold">₹{remaining.toLocaleString()}</p>
+              <p className="text-[10px] uppercase tracking-wider opacity-75 font-semibold">Due</p>
+              <p className="text-2xl font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>₹{remaining.toLocaleString()}</p>
             </div>
           </div>
 
-          {/* Primary Actions — Lifecycle */}
+          {/* Primary Actions */}
           {!isConverted && (
-            <div className="space-y-2">
-              {/* Pending → Approve (Schedule) */}
+            <div className="space-y-2.5">
               {job.status === "pending" && (
                 <Button
                   onClick={() => { updateJobStatus(job.id, "scheduled"); toast.success("Request approved & scheduled!"); }}
-                  className="w-full h-11 rounded-xl gap-2 text-sm font-semibold"
+                  className="w-full h-12 rounded-2xl gap-2 text-sm font-bold gradient-primary shadow-glow border-0"
                 >
                   <CalendarCheck className="h-4 w-4" /> Approve & Schedule
                 </Button>
               )}
 
-              {/* Scheduled → Start */}
               {job.status === "scheduled" && (
                 <Button
                   onClick={() => { updateJobStatus(job.id, "in_progress"); toast.success("Job started!"); }}
-                  className="w-full h-11 rounded-xl gap-2 text-sm font-semibold"
+                  className="w-full h-12 rounded-2xl gap-2 text-sm font-bold gradient-primary shadow-glow border-0"
                 >
                   <Play className="h-4 w-4" /> Start Job
                 </Button>
               )}
 
-              {/* In Progress → Complete */}
               {job.status === "in_progress" && (
                 <Button
                   onClick={() => { updateJobStatus(job.id, "completed"); toast.success("Job completed!"); }}
-                  className="w-full h-11 rounded-xl gap-2 text-sm font-semibold bg-success hover:bg-success/90"
+                  className="w-full h-12 rounded-2xl gap-2 text-sm font-bold bg-success hover:bg-success/90 border-0"
                 >
                   <CheckCircle className="h-4 w-4" /> Mark Complete
                 </Button>
               )}
 
-              {/* Secondary actions row */}
+              {/* Secondary actions */}
               <div className="grid grid-cols-3 gap-2">
                 {remaining > 0 && (
                   <button
                     onClick={() => { setShowPayment(!showPayment); setShowNotes(false); setShowMaterials(false); }}
                     className={cn(
-                      "flex flex-col items-center gap-1 py-2.5 rounded-xl border text-xs font-medium transition-colors",
-                      showPayment ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground"
+                      "flex flex-col items-center gap-1.5 py-3 rounded-2xl text-xs font-semibold transition-all",
+                      showPayment ? "gradient-primary text-primary-foreground shadow-glow" : "bg-card shadow-soft text-muted-foreground"
                     )}
                   >
                     <Wallet className="h-4 w-4" />
@@ -179,8 +176,8 @@ const JobDetailSheet = ({ job, open, onOpenChange }: JobDetailSheetProps) => {
                   <button
                     onClick={() => { setShowMaterials(!showMaterials); setShowPayment(false); setShowNotes(false); }}
                     className={cn(
-                      "flex flex-col items-center gap-1 py-2.5 rounded-xl border text-xs font-medium transition-colors",
-                      showMaterials ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground"
+                      "flex flex-col items-center gap-1.5 py-3 rounded-2xl text-xs font-semibold transition-all",
+                      showMaterials ? "gradient-primary text-primary-foreground shadow-glow" : "bg-card shadow-soft text-muted-foreground"
                     )}
                   >
                     <Package className="h-4 w-4" />
@@ -190,8 +187,8 @@ const JobDetailSheet = ({ job, open, onOpenChange }: JobDetailSheetProps) => {
                 <button
                   onClick={() => { setShowNotes(!showNotes); setEditNotes(job.notes); setShowPayment(false); setShowMaterials(false); }}
                   className={cn(
-                    "flex flex-col items-center gap-1 py-2.5 rounded-xl border text-xs font-medium transition-colors",
-                    showNotes ? "border-primary bg-primary/5 text-primary" : "border-border text-muted-foreground"
+                    "flex flex-col items-center gap-1.5 py-3 rounded-2xl text-xs font-semibold transition-all",
+                    showNotes ? "gradient-primary text-primary-foreground shadow-glow" : "bg-card shadow-soft text-muted-foreground"
                   )}
                 >
                   <StickyNote className="h-4 w-4" />
@@ -199,11 +196,10 @@ const JobDetailSheet = ({ job, open, onOpenChange }: JobDetailSheetProps) => {
                 </button>
               </div>
 
-              {/* Convert to Event */}
               {(job.status === "scheduled" || job.status === "in_progress") && (
                 <button
                   onClick={handleConvert}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-dashed border-border text-xs font-medium text-muted-foreground active:bg-muted/40 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl border-2 border-dashed border-border text-xs font-semibold text-muted-foreground active:bg-muted transition-colors"
                 >
                   <ArrowUpRight className="h-3.5 w-3.5" />
                   Convert to Event / Project
@@ -214,59 +210,38 @@ const JobDetailSheet = ({ job, open, onOpenChange }: JobDetailSheetProps) => {
 
           {/* Payment form */}
           {showPayment && (
-            <div className="border border-border rounded-xl p-3 space-y-2.5">
-              <p className="text-xs font-semibold mb-1">Record Payment</p>
-              <Input
-                placeholder={`Amount (max ₹${remaining})`}
-                value={payAmount}
-                onChange={e => setPayAmount(e.target.value)}
-                type="number"
-                className="h-10 rounded-lg text-sm"
-                autoFocus
-              />
+            <div className="bg-card rounded-2xl p-4 space-y-3 shadow-soft">
+              <p className="text-xs font-bold mb-1">Record Payment</p>
+              <Input placeholder={`Amount (max ₹${remaining})`} value={payAmount} onChange={e => setPayAmount(e.target.value)} type="number" className="h-11 rounded-xl text-sm" autoFocus />
               <Select value={payMethod} onValueChange={v => setPayMethod(v as typeof payMethod)}>
-                <SelectTrigger className="h-10 rounded-lg">
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger className="h-11 rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="cash">Cash</SelectItem>
                   <SelectItem value="upi">UPI</SelectItem>
                   <SelectItem value="bank">Bank Transfer</SelectItem>
                 </SelectContent>
               </Select>
-              <Button onClick={handlePayment} className="w-full h-10 rounded-lg text-sm font-semibold">
-                Confirm Payment
-              </Button>
+              <Button onClick={handlePayment} className="w-full h-11 rounded-xl text-sm font-bold">Confirm Payment</Button>
             </div>
           )}
 
-          {/* Notes form */}
           {showNotes && (
-            <div className="border border-border rounded-xl p-3 space-y-2.5">
-              <p className="text-xs font-semibold mb-1">Update Notes</p>
-              <Textarea
-                value={editNotes}
-                onChange={e => setEditNotes(e.target.value)}
-                className="rounded-lg text-sm"
-                rows={3}
-                autoFocus
-              />
-              <Button onClick={() => { updateJobNotes(job.id, editNotes); toast.success("Notes updated!"); setShowNotes(false); }} className="w-full h-10 rounded-lg text-sm font-semibold">
-                Save Notes
-              </Button>
+            <div className="bg-card rounded-2xl p-4 space-y-3 shadow-soft">
+              <p className="text-xs font-bold mb-1">Update Notes</p>
+              <Textarea value={editNotes} onChange={e => setEditNotes(e.target.value)} className="rounded-xl text-sm" rows={3} autoFocus />
+              <Button onClick={() => { updateJobNotes(job.id, editNotes); toast.success("Notes updated!"); setShowNotes(false); }} className="w-full h-11 rounded-xl text-sm font-bold">Save Notes</Button>
             </div>
           )}
 
-          {/* Materials form */}
           {showMaterials && (
-            <div className="border border-border rounded-xl p-3 space-y-2.5">
-              <p className="text-xs font-semibold mb-1">Add Material</p>
-              <Input placeholder="Material name" value={matName} onChange={e => setMatName(e.target.value)} className="h-10 rounded-lg text-sm" autoFocus />
+            <div className="bg-card rounded-2xl p-4 space-y-3 shadow-soft">
+              <p className="text-xs font-bold mb-1">Add Material</p>
+              <Input placeholder="Material name" value={matName} onChange={e => setMatName(e.target.value)} className="h-11 rounded-xl text-sm" autoFocus />
               <div className="flex gap-2">
-                <Input placeholder="Qty" value={matQty} onChange={e => setMatQty(e.target.value)} type="number" className="h-10 rounded-lg text-sm flex-1" />
-                <Input placeholder="Cost (₹)" value={matCost} onChange={e => setMatCost(e.target.value)} type="number" className="h-10 rounded-lg text-sm flex-1" />
+                <Input placeholder="Qty" value={matQty} onChange={e => setMatQty(e.target.value)} type="number" className="h-11 rounded-xl text-sm flex-1" />
+                <Input placeholder="Cost (₹)" value={matCost} onChange={e => setMatCost(e.target.value)} type="number" className="h-11 rounded-xl text-sm flex-1" />
               </div>
-              <Button onClick={handleAddMaterial} className="w-full h-10 rounded-lg text-sm font-semibold gap-2">
+              <Button onClick={handleAddMaterial} className="w-full h-11 rounded-xl text-sm font-bold gap-2">
                 <Plus className="h-4 w-4" /> Add Material
               </Button>
             </div>

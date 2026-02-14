@@ -15,24 +15,36 @@ const BottomNav = () => {
   const navigate = useNavigate();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border safe-bottom">
-      <div className="mx-auto max-w-lg flex items-center justify-around h-14 px-1">
-        {tabs.map(({ path, icon: Icon, label }) => {
-          const isActive = path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
-          return (
-            <button
-              key={path}
-              onClick={() => navigate(path)}
-              className={cn(
-                "flex flex-col items-center justify-center gap-0.5 min-w-[48px] min-h-[44px] transition-colors flex-1",
-                isActive ? "text-primary" : "text-muted-foreground"
-              )}
-            >
-              <Icon className="h-5 w-5" strokeWidth={isActive ? 2.2 : 1.6} />
-              <span className="text-[10px] font-medium leading-none">{label}</span>
-            </button>
-          );
-        })}
+    <nav className="fixed bottom-0 left-0 right-0 z-50 safe-bottom">
+      <div className="mx-auto max-w-lg px-3 pb-2">
+        <div className="glass rounded-2xl shadow-soft">
+          <div className="flex items-center justify-around h-16 px-1">
+            {tabs.map(({ path, icon: Icon, label }) => {
+              const isActive = path === "/" ? location.pathname === "/" : location.pathname.startsWith(path);
+              return (
+                <button
+                  key={path}
+                  onClick={() => navigate(path)}
+                  className={cn(
+                    "flex flex-col items-center justify-center gap-1 min-w-[52px] min-h-[44px] transition-all duration-200 flex-1 rounded-xl",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
+                  <div className={cn(
+                    "flex items-center justify-center h-8 w-8 rounded-xl transition-all duration-200",
+                    isActive && "gradient-primary shadow-glow"
+                  )}>
+                    <Icon className={cn("h-[18px] w-[18px]", isActive && "text-primary-foreground")} strokeWidth={isActive ? 2.2 : 1.6} />
+                  </div>
+                  <span className={cn(
+                    "text-[10px] font-medium leading-none transition-colors",
+                    isActive ? "text-primary font-semibold" : "text-muted-foreground"
+                  )}>{label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </nav>
   );

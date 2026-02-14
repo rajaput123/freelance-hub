@@ -16,41 +16,39 @@ const JobCard = ({ job, compact = false, onClick }: JobCardProps) => {
     <div
       onClick={onClick}
       className={cn(
-        "bg-card border border-border rounded-xl p-3 active:bg-muted/40 transition-colors",
+        "bg-card rounded-2xl p-3.5 shadow-soft active:scale-[0.98] transition-all duration-200",
         onClick && "cursor-pointer"
       )}
     >
       <div className="flex items-start gap-3">
-        {/* Avatar */}
-        <div className="h-10 w-10 rounded-full bg-primary/8 text-primary flex items-center justify-center text-sm font-semibold shrink-0 mt-0.5">
+        <div className="h-11 w-11 rounded-2xl gradient-primary text-primary-foreground flex items-center justify-center text-sm font-bold shrink-0 mt-0.5 shadow-glow/50">
           {job.clientName.charAt(0)}
         </div>
         <div className="flex-1 min-w-0">
-          {/* Top row: name + badge */}
           <div className="flex items-center justify-between gap-2">
-            <p className="font-semibold text-sm text-foreground truncate">{job.clientName}</p>
+            <p className="font-bold text-sm text-foreground truncate">{job.clientName}</p>
             <StatusBadge status={job.status} />
           </div>
-          {/* Service */}
-          <p className="text-xs text-muted-foreground mt-0.5">{job.service}</p>
+          <p className="text-xs text-muted-foreground mt-0.5 font-medium">{job.service}</p>
 
-          {/* Meta row */}
           {!compact && (
-            <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
+            <div className="flex items-center gap-3 mt-2.5 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1 bg-muted rounded-lg px-2 py-1">
                 <Clock className="h-3 w-3" /> {job.time}
               </span>
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1 bg-muted rounded-lg px-2 py-1">
                 <MapPin className="h-3 w-3" /> {job.location}
               </span>
             </div>
           )}
 
-          {/* Price row */}
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-sm font-bold text-foreground">₹{job.amount.toLocaleString()}</span>
-            <span className={cn("text-xs font-medium", isPaid ? "text-success" : "text-warning")}>
-              {isPaid ? "Paid" : `₹${job.paidAmount.toLocaleString()} paid`}
+          <div className="flex items-center justify-between mt-2.5">
+            <span className="text-sm font-bold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>₹{job.amount.toLocaleString()}</span>
+            <span className={cn(
+              "text-[11px] font-semibold px-2 py-0.5 rounded-full",
+              isPaid ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
+            )}>
+              {isPaid ? "✓ Paid" : `₹${job.paidAmount.toLocaleString()} paid`}
             </span>
           </div>
         </div>

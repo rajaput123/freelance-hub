@@ -34,46 +34,46 @@ const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
   const EmptyIcon = tabData[tab].icon;
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-24">
       <PageHeader
         title="Requests & Tasks"
         onMenuClick={onMenuClick}
-        action={{ onClick: () => setShowAddJob(true), icon: <Plus className="h-4.5 w-4.5 text-primary-foreground" /> }}
+        action={{ onClick: () => setShowAddJob(true), icon: <Plus className="h-[18px] w-[18px] text-primary-foreground" /> }}
       />
 
       {/* Summary strip */}
       {newRequests.length > 0 && tab !== "new" && (
-        <div className="px-4 mt-3">
+        <div className="px-4 -mt-3">
           <button
             onClick={() => setTab("new")}
-            className="w-full bg-accent rounded-xl p-3 flex items-center gap-3 active:scale-[0.99] transition-transform"
+            className="w-full gradient-primary rounded-2xl p-3 flex items-center gap-3 active:scale-[0.98] transition-all shadow-glow"
           >
-            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Inbox className="h-4 w-4 text-primary" />
+            <div className="h-9 w-9 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
+              <Inbox className="h-4 w-4 text-primary-foreground" />
             </div>
-            <p className="text-sm font-semibold flex-1 text-left">{newRequests.length} new request{newRequests.length > 1 ? "s" : ""} waiting</p>
-            <span className="text-xs text-primary font-semibold">Review</span>
+            <p className="text-sm font-bold flex-1 text-left text-primary-foreground">{newRequests.length} new request{newRequests.length > 1 ? "s" : ""} waiting</p>
+            <span className="text-xs text-primary-foreground/80 font-semibold">Review →</span>
           </button>
         </div>
       )}
 
       {/* Tab switcher */}
-      <div className="px-4 mt-3">
-        <div className="flex bg-muted rounded-xl p-1">
+      <div className={cn("px-4", newRequests.length > 0 && tab !== "new" ? "mt-3" : "-mt-3")}>
+        <div className="flex bg-card rounded-2xl p-1 shadow-soft">
           {(["new", "scheduled", "active", "done"] as const).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
               className={cn(
-                "flex-1 rounded-lg py-2 text-[11px] font-semibold transition-all relative",
-                tab === t ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"
+                "flex-1 rounded-xl py-2.5 text-[11px] font-bold transition-all relative",
+                tab === t ? "gradient-primary text-primary-foreground shadow-glow" : "text-muted-foreground"
               )}
             >
               {tabData[t].label}
               {tabData[t].count > 0 && (
                 <span className={cn(
                   "ml-1 inline-flex items-center justify-center h-4 min-w-[16px] rounded-full text-[9px] font-bold px-1",
-                  t === "new" && tabData[t].count > 0 ? "bg-primary text-primary-foreground" : "bg-muted-foreground/20 text-muted-foreground"
+                  tab === t ? "bg-primary-foreground/25 text-primary-foreground" : "bg-muted text-muted-foreground"
                 )}>
                   {tabData[t].count}
                 </span>
@@ -85,24 +85,29 @@ const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
 
       {/* Lifecycle indicator */}
       <div className="px-4 mt-3">
-        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-          <span className={cn("font-semibold", tab === "new" && "text-primary")}>Request</span>
-          <span>→</span>
-          <span className={cn("font-semibold", tab === "scheduled" && "text-primary")}>Approve</span>
-          <span>→</span>
-          <span className={cn("font-semibold", tab === "active" && "text-primary")}>Execute</span>
-          <span>→</span>
-          <span className={cn("font-semibold", tab === "done" && "text-primary")}>Complete</span>
+        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+          {["Request", "Approve", "Execute", "Complete"].map((step, i) => (
+            <span key={step} className="flex items-center gap-1.5">
+              {i > 0 && <span className="text-border">→</span>}
+              <span className={cn(
+                "font-bold",
+                (i === 0 && tab === "new") || (i === 1 && tab === "scheduled") || (i === 2 && tab === "active") || (i === 3 && tab === "done")
+                  ? "text-primary" : ""
+              )}>{step}</span>
+            </span>
+          ))}
         </div>
       </div>
 
       {/* List */}
-      <div className="px-4 mt-3 space-y-2">
+      <div className="px-4 mt-3 space-y-2.5">
         {displayed.length === 0 ? (
-          <div className="text-center py-14">
-            <EmptyIcon className="h-6 w-6 text-muted-foreground mx-auto mb-2 opacity-40" />
-            <p className="text-sm font-medium text-foreground">{tabData[tab].emptyTitle}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{tabData[tab].emptyDesc}</p>
+          <div className="bg-card rounded-2xl p-10 text-center shadow-soft">
+            <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+              <EmptyIcon className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-bold text-foreground">{tabData[tab].emptyTitle}</p>
+            <p className="text-xs text-muted-foreground mt-1">{tabData[tab].emptyDesc}</p>
           </div>
         ) : (
           displayed.map(job => (

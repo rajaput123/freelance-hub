@@ -12,26 +12,26 @@ interface PageHeaderProps {
 
 const PageHeader = ({ title, onMenuClick, greeting, action }: PageHeaderProps) => {
   return (
-    <div className="bg-primary px-4 pt-3 pb-5">
+    <div className="gradient-primary px-5 pt-4 pb-7 rounded-b-[28px] shadow-glow">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <button
             onClick={onMenuClick}
-            className="h-9 w-9 rounded-xl bg-primary-foreground/15 flex items-center justify-center active:scale-95 transition-transform"
+            className="h-10 w-10 rounded-2xl bg-primary-foreground/15 backdrop-blur-sm flex items-center justify-center active:scale-95 transition-transform"
           >
-            <Menu className="h-4.5 w-4.5 text-primary-foreground" />
+            <Menu className="h-[18px] w-[18px] text-primary-foreground" />
           </button>
           <div>
-            {greeting && <p className="text-primary-foreground/70 text-[11px] font-medium">{greeting}</p>}
-            <h1 className="text-lg font-bold text-primary-foreground">{title}</h1>
+            {greeting && <p className="text-primary-foreground/75 text-[11px] font-medium tracking-wide">{greeting}</p>}
+            <h1 className="text-xl font-bold text-primary-foreground tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{title}</h1>
           </div>
         </div>
         {action && (
           <button
             onClick={action.onClick}
-            className="h-9 w-9 rounded-xl bg-primary-foreground/15 flex items-center justify-center active:scale-95 transition-transform"
+            className="h-10 w-10 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center active:scale-95 transition-transform"
           >
-            {action.icon || <Plus className="h-4.5 w-4.5 text-primary-foreground" />}
+            {action.icon || <Plus className="h-[18px] w-[18px] text-primary-foreground" />}
           </button>
         )}
       </div>

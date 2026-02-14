@@ -1,6 +1,6 @@
 import { useAppData } from "@/context/AppContext";
 import PageHeader from "@/components/PageHeader";
-import { ArrowDownLeft, Briefcase, Calendar, MessageSquare, Banknote, Smartphone, Building2, Bell, ArrowUpRight, Package } from "lucide-react";
+import { ArrowDownLeft, Briefcase, Calendar, MessageSquare, Bell, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -10,7 +10,7 @@ interface ActivityPageProps {
 
 type ActivityItem = {
   id: string;
-  type: "booking" | "payment" | "event" | "communication" | "inventory";
+  type: "booking" | "payment" | "event" | "communication";
   title: string;
   subtitle: string;
   date: string;
@@ -32,7 +32,7 @@ const ActivityPage = ({ onMenuClick }: ActivityPageProps) => {
       date: j.date,
       amount: j.amount,
       icon: j.status === "pending" ? Bell : j.convertedToEventId ? ArrowUpRight : Briefcase,
-      color: j.status === "pending" ? "bg-accent text-accent-foreground" : j.convertedToEventId ? "bg-info/8 text-info" : "bg-primary/8 text-primary",
+      color: j.status === "pending" ? "bg-accent text-accent-foreground" : j.convertedToEventId ? "bg-info/10 text-info" : "bg-primary/10 text-primary",
     })),
     ...payments.map(p => ({
       id: `pay-${p.id}`,
@@ -42,7 +42,7 @@ const ActivityPage = ({ onMenuClick }: ActivityPageProps) => {
       date: p.date,
       amount: p.amount,
       icon: ArrowDownLeft,
-      color: "bg-success/8 text-success",
+      color: "bg-success/10 text-success",
     })),
     ...events.map(e => ({
       id: `evt-${e.id}`,
@@ -51,7 +51,7 @@ const ActivityPage = ({ onMenuClick }: ActivityPageProps) => {
       subtitle: `${e.clientName} · ${e.status === "completed" ? "Completed" : e.status === "in_progress" ? "In Progress" : "Planning"}`,
       date: e.date,
       icon: Calendar,
-      color: "bg-info/8 text-info",
+      color: "bg-info/10 text-info",
     })),
     ...messages.map(m => ({
       id: `msg-${m.id}`,
@@ -60,7 +60,7 @@ const ActivityPage = ({ onMenuClick }: ActivityPageProps) => {
       subtitle: `To: ${m.recipientName} · ${m.type}`,
       date: m.date,
       icon: MessageSquare,
-      color: m.read ? "bg-muted text-muted-foreground" : "bg-destructive/8 text-destructive",
+      color: m.read ? "bg-muted text-muted-foreground" : "bg-destructive/10 text-destructive",
     })),
   ].sort((a, b) => b.date.localeCompare(a.date));
 
@@ -94,19 +94,19 @@ const ActivityPage = ({ onMenuClick }: ActivityPageProps) => {
   ] as const;
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-24">
       <PageHeader title="Activity" onMenuClick={onMenuClick} />
 
       {/* Filters */}
-      <div className="px-4 mt-3">
-        <div className="flex flex-wrap gap-2">
+      <div className="px-4 -mt-3">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
           {filters.map(f => (
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
               className={cn(
-                "rounded-full px-3 py-1 text-xs font-semibold transition-colors",
-                filter === f.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                "rounded-full px-4 py-2 text-xs font-bold transition-all duration-200 whitespace-nowrap",
+                filter === f.key ? "gradient-primary text-primary-foreground shadow-glow" : "bg-card text-muted-foreground shadow-soft"
               )}
             >
               {f.label}
@@ -117,28 +117,30 @@ const ActivityPage = ({ onMenuClick }: ActivityPageProps) => {
 
       <div className="px-4 mt-4">
         {Object.keys(grouped).length === 0 ? (
-          <div className="text-center py-16">
-            <MessageSquare className="h-6 w-6 text-muted-foreground mx-auto mb-2 opacity-40" />
-            <p className="text-sm font-medium">No activity yet</p>
+          <div className="bg-card rounded-2xl p-10 text-center shadow-soft">
+            <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
+              <MessageSquare className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-bold">No activity yet</p>
           </div>
         ) : (
           Object.entries(grouped).map(([date, items]) => (
             <div key={date} className="mb-5">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">{formatDateLabel(date)}</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2.5">{formatDateLabel(date)}</p>
               <div className="space-y-2">
                 {items.map(item => {
                   const Icon = item.icon;
                   return (
-                    <div key={item.id} className="flex items-center gap-3 bg-card border border-border rounded-xl p-3">
-                      <div className={cn("h-9 w-9 rounded-full flex items-center justify-center shrink-0", item.color)}>
-                        <Icon className="h-4 w-4" />
+                    <div key={item.id} className="flex items-center gap-3 bg-card rounded-2xl p-3.5 shadow-soft">
+                      <div className={cn("h-10 w-10 rounded-2xl flex items-center justify-center shrink-0", item.color)}>
+                        <Icon className="h-[18px] w-[18px]" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm truncate">{item.title}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{item.subtitle}</p>
+                        <p className="font-bold text-sm truncate">{item.title}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 font-medium">{item.subtitle}</p>
                       </div>
                       {item.amount !== undefined && (
-                        <p className={cn("text-sm font-bold shrink-0", item.type === "payment" ? "text-success" : "text-foreground")}>
+                        <p className={cn("text-sm font-bold shrink-0", item.type === "payment" ? "text-success" : "text-foreground")} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                           {item.type === "payment" ? "+" : ""}₹{item.amount.toLocaleString()}
                         </p>
                       )}

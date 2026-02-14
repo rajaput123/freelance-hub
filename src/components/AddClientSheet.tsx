@@ -21,10 +21,7 @@ const AddClientSheet = ({ trigger, onClientAdded }: AddClientSheetProps) => {
   const [notes, setNotes] = useState("");
 
   const handleSave = () => {
-    if (!name.trim()) {
-      toast.error("Client name is required");
-      return;
-    }
+    if (!name.trim()) { toast.error("Client name is required"); return; }
     const client = addClient({ name: name.trim(), phone: phone.trim(), location: location.trim(), notes: notes.trim() });
     toast.success(`${client.name} added!`);
     onClientAdded?.(client.id);
@@ -36,21 +33,22 @@ const AddClientSheet = ({ trigger, onClientAdded }: AddClientSheetProps) => {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {trigger || (
-          <Button size="lg" className="gap-2 rounded-lg">
+          <Button size="lg" className="gap-2 rounded-xl">
             <UserPlus className="h-5 w-5" /> Add Client
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent side="bottom" className="rounded-t-2xl max-h-[80vh]">
+      <SheetContent side="bottom" className="rounded-t-3xl max-h-[80vh] border-0">
+        <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />
         <SheetHeader>
-          <SheetTitle className="text-left text-base">New Client</SheetTitle>
+          <SheetTitle className="text-left text-base" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>New Client</SheetTitle>
         </SheetHeader>
         <div className="mt-4 space-y-3">
-          <Input placeholder="Client name *" value={name} onChange={e => setName(e.target.value)} className="h-10 rounded-lg text-sm" autoFocus />
-          <Input placeholder="Phone number" value={phone} onChange={e => setPhone(e.target.value)} className="h-10 rounded-lg text-sm" type="tel" />
-          <Input placeholder="Location" value={location} onChange={e => setLocation(e.target.value)} className="h-10 rounded-lg text-sm" />
-          <Textarea placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} className="rounded-lg text-sm" rows={2} />
-          <Button onClick={handleSave} className="w-full h-10 rounded-lg text-sm font-semibold">Save Client</Button>
+          <Input placeholder="Client name *" value={name} onChange={e => setName(e.target.value)} className="h-11 rounded-xl text-sm" autoFocus />
+          <Input placeholder="Phone number" value={phone} onChange={e => setPhone(e.target.value)} className="h-11 rounded-xl text-sm" type="tel" />
+          <Input placeholder="Location" value={location} onChange={e => setLocation(e.target.value)} className="h-11 rounded-xl text-sm" />
+          <Textarea placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} className="rounded-xl text-sm" rows={2} />
+          <Button onClick={handleSave} className="w-full h-12 rounded-xl text-sm font-bold gradient-primary shadow-glow border-0">Save Client</Button>
         </div>
       </SheetContent>
     </Sheet>
