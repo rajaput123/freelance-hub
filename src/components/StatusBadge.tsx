@@ -1,17 +1,18 @@
 import { JobStatus } from "@/data/types";
 import { cn } from "@/lib/utils";
+import { Circle } from "lucide-react";
 
-const statusConfig: Record<JobStatus, { label: string; className: string }> = {
-  scheduled: { label: "Scheduled", className: "bg-info/10 text-info border-info/20" },
-  in_progress: { label: "In Progress", className: "bg-warning/10 text-warning border-warning/20" },
-  completed: { label: "Completed", className: "bg-success/10 text-success border-success/20" },
-  cancelled: { label: "Cancelled", className: "bg-destructive/10 text-destructive border-destructive/20" },
+const statusConfig: Record<JobStatus, { label: string; dot: string; bg: string; text: string }> = {
+  scheduled: { label: "Scheduled", dot: "bg-info", bg: "bg-info/8", text: "text-info" },
+  in_progress: { label: "Active", dot: "bg-warning", bg: "bg-warning/8", text: "text-warning" },
+  completed: { label: "Done", dot: "bg-success", bg: "bg-success/8", text: "text-success" },
+  cancelled: { label: "Cancelled", dot: "bg-destructive", bg: "bg-destructive/8", text: "text-destructive" },
 };
 
-export const eventStatusConfig: Record<string, { label: string; className: string }> = {
-  planning: { label: "Planning", className: "bg-info/10 text-info border-info/20" },
-  in_progress: { label: "In Progress", className: "bg-warning/10 text-warning border-warning/20" },
-  completed: { label: "Completed", className: "bg-success/10 text-success border-success/20" },
+export const eventStatusConfig: Record<string, { label: string; dot: string; bg: string; text: string }> = {
+  planning: { label: "Planning", dot: "bg-info", bg: "bg-info/8", text: "text-info" },
+  in_progress: { label: "Active", dot: "bg-warning", bg: "bg-warning/8", text: "text-warning" },
+  completed: { label: "Done", dot: "bg-success", bg: "bg-success/8", text: "text-success" },
 };
 
 interface StatusBadgeProps {
@@ -24,7 +25,8 @@ const StatusBadge = ({ status, type = "job" }: StatusBadgeProps) => {
   if (!config) return null;
 
   return (
-    <span className={cn("inline-flex items-center rounded-lg border px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase", config.className)}>
+    <span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold", config.bg, config.text)}>
+      <span className={cn("h-1.5 w-1.5 rounded-full", config.dot)} />
       {config.label}
     </span>
   );
