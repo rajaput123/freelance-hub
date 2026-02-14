@@ -3,7 +3,6 @@ import { useAppData } from "@/context/AppContext";
 import { Job } from "@/data/types";
 import JobCard from "@/components/JobCard";
 import JobDetailSheet from "@/components/JobDetailSheet";
-import AddJobSheet from "@/components/AddJobSheet";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,38 +25,36 @@ const JobsPage = () => {
     .filter(j => !search || j.clientName.toLowerCase().includes(search.toLowerCase()) || j.service.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="min-h-screen pb-24 bg-background">
-      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 pt-11 pb-3">
-        <h1 className="text-xl font-bold mb-3">Jobs</h1>
-        
-        {/* Search bar - Swiggy style */}
+    <div className="min-h-screen bg-background pb-20">
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 pt-12 pb-3">
+        <h1 className="text-lg font-bold mb-3">Jobs</h1>
+
+        {/* Search */}
         <div className="flex items-center gap-2 mb-3">
-          <div className="flex-1 flex items-center gap-2 bg-background rounded-xl px-3 h-10 border border-border">
+          <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3 h-9">
             <Search className="h-4 w-4 text-muted-foreground shrink-0" />
             <input
               type="text"
               placeholder="Search jobs or clients..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="flex-1 bg-transparent text-[13px] outline-none placeholder:text-muted-foreground"
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
             />
           </div>
-          <button className="h-10 w-10 rounded-xl bg-background border border-border flex items-center justify-center shrink-0">
-            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-          </button>
         </div>
 
-        {/* Filter pills */}
+        {/* Filters */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
           {statusFilters.map(f => (
             <button
               key={f}
               onClick={() => setFilter(f)}
               className={cn(
-                "rounded-full px-4 py-1.5 text-[12px] font-semibold whitespace-nowrap transition-all border",
+                "rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap transition-colors",
                 filter === f
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-card text-muted-foreground border-border hover:text-foreground"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground"
               )}
             >
               {filterLabels[f]}
@@ -66,11 +63,11 @@ const JobsPage = () => {
         </div>
       </div>
 
-      <div className="px-4 mt-3 space-y-2.5">
+      <div className="px-4 mt-3 space-y-2">
         {filtered.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
-            <p className="font-semibold text-[14px]">No jobs found</p>
-            <p className="text-[12px] mt-1">Try adjusting your filters</p>
+            <p className="text-sm font-medium">No jobs found</p>
+            <p className="text-xs mt-1">Try adjusting your filters</p>
           </div>
         ) : (
           filtered.map(job => (

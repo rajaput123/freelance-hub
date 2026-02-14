@@ -6,10 +6,10 @@ const ProfilePage = () => {
   const totalEarnings = payments.reduce((s, p) => s + p.amount, 0);
 
   const stats = [
-    { label: "Total Jobs", value: jobs.length, icon: Briefcase, color: "bg-primary/10 text-primary" },
-    { label: "Clients", value: clients.length, icon: Users, color: "bg-info/10 text-info" },
-    { label: "Events", value: events.length, icon: Calendar, color: "bg-success/10 text-success" },
-    { label: "Earnings", value: `₹${(totalEarnings / 1000).toFixed(0)}k`, icon: Wallet, color: "bg-warning/10 text-warning" },
+    { label: "Jobs", value: jobs.length, icon: Briefcase, color: "bg-primary/8 text-primary" },
+    { label: "Clients", value: clients.length, icon: Users, color: "bg-info/8 text-info" },
+    { label: "Events", value: events.length, icon: Calendar, color: "bg-success/8 text-success" },
+    { label: "Earned", value: `₹${(totalEarnings / 1000).toFixed(0)}k`, icon: Wallet, color: "bg-warning/8 text-warning" },
   ];
 
   const menuItems = [
@@ -21,67 +21,68 @@ const ProfilePage = () => {
   ];
 
   return (
-    <div className="min-h-screen pb-24 bg-background">
+    <div className="min-h-screen bg-background pb-20">
       {/* Profile header */}
-      <div className="bg-primary px-5 pb-8 pt-11">
-        <div className="flex items-center gap-4">
-          <div className="h-16 w-16 rounded-full bg-primary-foreground/20 flex items-center justify-center">
-            <User className="h-8 w-8 text-primary-foreground" />
+      <div className="bg-primary px-4 pt-12 pb-5">
+        <div className="flex items-center gap-3">
+          <div className="h-14 w-14 rounded-full bg-primary-foreground/15 flex items-center justify-center">
+            <User className="h-7 w-7 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-primary-foreground">Freelancer Pro</h1>
-            <p className="text-[13px] text-primary-foreground/70">freelancer@example.com</p>
-            <p className="text-[12px] text-primary-foreground/50 mt-0.5">Member since Jan 2024</p>
+            <h1 className="text-base font-bold text-primary-foreground">Freelancer Pro</h1>
+            <p className="text-xs text-primary-foreground/70">freelancer@example.com</p>
           </div>
         </div>
       </div>
 
-      {/* Stats grid */}
-      <div className="px-4 -mt-4">
-        <div className="grid grid-cols-2 gap-2.5">
+      {/* Stats */}
+      <div className="px-4 -mt-3">
+        <div className="grid grid-cols-4 gap-2">
           {stats.map((stat, i) => (
-            <div key={i} className="rounded-2xl bg-card border border-border/50 p-3.5 shadow-sm flex items-center gap-3">
-              <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${stat.color}`}>
-                <stat.icon className="h-5 w-5" />
+            <div key={i} className="bg-card border border-border rounded-xl p-2.5 text-center shadow-sm">
+              <div className={`h-8 w-8 rounded-lg flex items-center justify-center mx-auto ${stat.color}`}>
+                <stat.icon className="h-4 w-4" />
               </div>
-              <div>
-                <p className="text-lg font-extrabold leading-tight">{stat.value}</p>
-                <p className="text-[11px] text-muted-foreground font-medium">{stat.label}</p>
-              </div>
+              <p className="text-sm font-bold mt-1">{stat.value}</p>
+              <p className="text-[10px] text-muted-foreground">{stat.label}</p>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Divider */}
+      <div className="h-2 bg-muted mt-4" />
+
       {/* Menu */}
-      <div className="px-4 mt-5">
-        <div className="rounded-2xl bg-card border border-border/50 overflow-hidden shadow-sm">
-          {menuItems.map((item, i) => (
-            <button key={i} className="flex items-center gap-3 w-full px-4 py-3.5 text-left active:bg-muted/50 transition-colors border-b border-border/30 last:border-0">
-              <div className="h-9 w-9 rounded-xl bg-muted/50 flex items-center justify-center shrink-0">
-                <item.icon className="h-[18px] w-[18px] text-muted-foreground" />
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-[14px]">{item.label}</p>
-                <p className="text-[11px] text-muted-foreground">{item.subtitle}</p>
-              </div>
-              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-            </button>
-          ))}
-        </div>
+      <div className="px-4 mt-3">
+        {menuItems.map((item, i) => (
+          <button key={i} className="flex items-center gap-3 w-full py-3 text-left active:bg-muted/40 transition-colors border-b border-border last:border-0">
+            <div className="h-9 w-9 rounded-lg bg-muted flex items-center justify-center shrink-0">
+              <item.icon className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-sm">{item.label}</p>
+              <p className="text-xs text-muted-foreground">{item.subtitle}</p>
+            </div>
+            <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+          </button>
+        ))}
       </div>
 
+      {/* Divider */}
+      <div className="h-2 bg-muted mt-1" />
+
       {/* Logout */}
-      <div className="px-4 mt-4">
-        <button className="flex items-center gap-3 w-full rounded-2xl bg-card border border-destructive/20 px-4 py-3.5 active:bg-destructive/5 transition-colors">
-          <div className="h-9 w-9 rounded-xl bg-destructive/10 flex items-center justify-center">
-            <LogOut className="h-[18px] w-[18px] text-destructive" />
+      <div className="px-4 mt-3">
+        <button className="flex items-center gap-3 w-full py-3 text-left active:bg-destructive/5 transition-colors">
+          <div className="h-9 w-9 rounded-lg bg-destructive/8 flex items-center justify-center">
+            <LogOut className="h-4 w-4 text-destructive" />
           </div>
-          <span className="font-semibold text-[14px] text-destructive">Log Out</span>
+          <span className="font-semibold text-sm text-destructive">Log Out</span>
         </button>
       </div>
 
-      <p className="text-center text-[11px] text-muted-foreground mt-6">Version 1.0.0</p>
+      <p className="text-center text-[10px] text-muted-foreground mt-4 pb-4">Version 1.0.0</p>
     </div>
   );
 };

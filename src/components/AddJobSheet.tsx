@@ -66,20 +66,19 @@ const AddJobSheet = ({ trigger }: AddJobSheetProps) => {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         {trigger || (
-          <Button size="lg" className="gap-2 rounded-xl">
-            <Plus className="h-5 w-5" />
-            New Job
+          <Button size="lg" className="gap-2 rounded-lg">
+            <Plus className="h-5 w-5" /> New Job
           </Button>
         )}
       </SheetTrigger>
-      <SheetContent side="bottom" className="rounded-t-3xl max-h-[90vh] overflow-y-auto">
+      <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle className="text-left text-lg">New Job</SheetTitle>
+          <SheetTitle className="text-left text-base">New Job</SheetTitle>
         </SheetHeader>
         <div className="mt-4 space-y-3">
           <div className="flex gap-2">
             <Select value={clientId} onValueChange={setClientId}>
-              <SelectTrigger className="h-12 rounded-xl text-[14px] flex-1">
+              <SelectTrigger className="h-10 rounded-lg text-sm flex-1">
                 <SelectValue placeholder="Select client" />
               </SelectTrigger>
               <SelectContent>
@@ -89,13 +88,13 @@ const AddJobSheet = ({ trigger }: AddJobSheetProps) => {
               </SelectContent>
             </Select>
             <AddClientSheet
-              trigger={<Button variant="outline" size="icon" className="h-12 w-12 rounded-xl shrink-0"><Plus className="h-5 w-5" /></Button>}
+              trigger={<Button variant="outline" size="icon" className="h-10 w-10 rounded-lg shrink-0"><Plus className="h-4 w-4" /></Button>}
               onClientAdded={handleClientAdded}
             />
           </div>
 
           <Select value={service} onValueChange={handleServiceChange}>
-            <SelectTrigger className="h-12 rounded-xl text-[14px]">
+            <SelectTrigger className="h-10 rounded-lg text-sm">
               <SelectValue placeholder="Select service" />
             </SelectTrigger>
             <SelectContent>
@@ -106,28 +105,28 @@ const AddJobSheet = ({ trigger }: AddJobSheetProps) => {
           </Select>
 
           <div className="flex gap-2">
-            <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-12 rounded-xl text-[14px] flex-1" />
-            <Input type="time" value={time} onChange={e => setTime(e.target.value)} className="h-12 rounded-xl text-[14px] w-32" />
+            <Input type="date" value={date} onChange={e => setDate(e.target.value)} className="h-10 rounded-lg text-sm flex-1" />
+            <Input type="time" value={time} onChange={e => setTime(e.target.value)} className="h-10 rounded-lg text-sm w-28" />
           </div>
 
           <Input
             placeholder="Location"
             value={location || selectedClient?.location || ""}
             onChange={e => setLocation(e.target.value)}
-            className="h-12 rounded-xl text-[14px]"
+            className="h-10 rounded-lg text-sm"
           />
 
           <Input
             placeholder="Amount (₹)"
             value={amount}
             onChange={e => setAmount(e.target.value)}
-            className="h-12 rounded-xl text-[14px]"
+            className="h-10 rounded-lg text-sm"
             type="number"
           />
 
-          <Textarea placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} className="rounded-xl text-[14px]" rows={2} />
+          <Textarea placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} className="rounded-lg text-sm" rows={2} />
 
-          <Button onClick={handleSave} className="w-full h-12 rounded-xl text-[14px] font-bold">
+          <Button onClick={handleSave} className="w-full h-10 rounded-lg text-sm font-semibold">
             Create Job
           </Button>
         </div>

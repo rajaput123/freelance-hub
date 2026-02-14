@@ -1,4 +1,4 @@
-import { Home, Briefcase, Users, Calendar, User, Plus } from "lucide-react";
+import { Home, Briefcase, Calendar, User, Plus, Users } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -20,15 +20,15 @@ const BottomNav = () => {
 
   return (
     <>
-      {/* FAB menu overlay */}
+      {/* FAB overlay */}
       {showFab && (
-        <div className="fixed inset-0 z-[60] bg-foreground/40 backdrop-blur-sm" onClick={() => setShowFab(false)}>
-          <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[60] bg-black/30" onClick={() => setShowFab(false)}>
+          <div className="absolute bottom-[88px] left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" onClick={e => e.stopPropagation()}>
             <AddJobSheet
               trigger={
-                <button className="flex items-center gap-3 bg-card rounded-2xl px-5 py-3 shadow-lg active:scale-95 transition-transform" onClick={() => setShowFab(false)}>
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Briefcase className="h-5 w-5 text-primary" />
+                <button className="flex items-center gap-3 bg-card rounded-2xl pl-4 pr-6 py-3 shadow-lg active:scale-95 transition-transform min-w-[160px]" onClick={() => setShowFab(false)}>
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <Briefcase className="h-4 w-4 text-primary" />
                   </div>
                   <span className="font-semibold text-sm">New Job</span>
                 </button>
@@ -36,20 +36,20 @@ const BottomNav = () => {
             />
             <AddClientSheet
               trigger={
-                <button className="flex items-center gap-3 bg-card rounded-2xl px-5 py-3 shadow-lg active:scale-95 transition-transform" onClick={() => setShowFab(false)}>
-                  <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
-                    <Users className="h-5 w-5 text-success" />
+                <button className="flex items-center gap-3 bg-card rounded-2xl pl-4 pr-6 py-3 shadow-lg active:scale-95 transition-transform min-w-[160px]" onClick={() => setShowFab(false)}>
+                  <div className="w-9 h-9 rounded-xl bg-success/10 flex items-center justify-center">
+                    <Users className="h-4 w-4 text-success" />
                   </div>
                   <span className="font-semibold text-sm">Add Client</span>
                 </button>
               }
             />
-            <button 
-              className="flex items-center gap-3 bg-card rounded-2xl px-5 py-3 shadow-lg active:scale-95 transition-transform"
+            <button
+              className="flex items-center gap-3 bg-card rounded-2xl pl-4 pr-6 py-3 shadow-lg active:scale-95 transition-transform min-w-[160px]"
               onClick={() => { setShowFab(false); navigate("/events"); }}
             >
-              <div className="w-10 h-10 rounded-xl bg-info/10 flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-info" />
+              <div className="w-9 h-9 rounded-xl bg-info/10 flex items-center justify-center">
+                <Calendar className="h-4 w-4 text-info" />
               </div>
               <span className="font-semibold text-sm">New Event</span>
             </button>
@@ -57,9 +57,9 @@ const BottomNav = () => {
         </div>
       )}
 
-      {/* Bottom Nav */}
+      {/* Nav bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border safe-bottom">
-        <div className="mx-auto flex max-w-lg items-center justify-around h-16">
+        <div className="mx-auto max-w-lg flex items-center justify-around h-14 px-2">
           {tabs.map(({ path, icon: Icon, label }) => {
             if (path === "fab") {
               return (
@@ -67,27 +67,26 @@ const BottomNav = () => {
                   key="fab"
                   onClick={() => setShowFab(v => !v)}
                   className={cn(
-                    "relative -mt-7 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all active:scale-90",
-                    showFab && "rotate-45 bg-foreground"
+                    "relative -mt-6 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md active:scale-90 transition-all",
+                    showFab && "rotate-45"
                   )}
                 >
-                  <Plus className="h-7 w-7" strokeWidth={2.5} />
+                  <Plus className="h-6 w-6" strokeWidth={2.5} />
                 </button>
               );
             }
-
             const isActive = location.pathname === path;
             return (
               <button
                 key={path}
                 onClick={() => navigate(path)}
                 className={cn(
-                  "flex flex-col items-center gap-1 px-4 py-1 transition-colors",
+                  "flex flex-col items-center justify-center gap-0.5 min-w-[48px] min-h-[44px] transition-colors",
                   isActive ? "text-primary" : "text-muted-foreground"
                 )}
               >
-                <Icon className="h-[22px] w-[22px]" strokeWidth={isActive ? 2.5 : 1.8} />
-                <span className="text-[10px] font-semibold leading-none">{label}</span>
+                <Icon className="h-5 w-5" strokeWidth={isActive ? 2.2 : 1.6} />
+                <span className="text-[10px] font-medium leading-none">{label}</span>
               </button>
             );
           })}
