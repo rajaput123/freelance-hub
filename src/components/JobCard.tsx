@@ -1,6 +1,6 @@
 import { Job } from "@/data/types";
 import StatusBadge from "./StatusBadge";
-import { MapPin, Clock, IndianRupee } from "lucide-react";
+import { MapPin, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface JobCardProps {
@@ -11,52 +11,46 @@ interface JobCardProps {
 
 const JobCard = ({ job, compact = false, onClick }: JobCardProps) => {
   const isPaid = job.paidAmount >= job.amount;
-  const initial = job.clientName.charAt(0).toUpperCase();
 
   return (
     <div
       onClick={onClick}
       className={cn(
-        "rounded-2xl bg-card p-4 transition-all duration-150 active:scale-[0.98]",
-        "border border-border/70 shadow-sm",
+        "bg-card border border-border rounded-xl p-3 active:bg-muted/40 transition-colors",
         onClick && "cursor-pointer"
       )}
     >
       <div className="flex items-start gap-3">
-        <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm shrink-0">
-          {initial}
+        {/* Avatar */}
+        <div className="h-10 w-10 rounded-full bg-primary/8 text-primary flex items-center justify-center text-sm font-semibold shrink-0 mt-0.5">
+          {job.clientName.charAt(0)}
         </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <p className="font-semibold text-[15px] text-card-foreground truncate leading-tight">{job.clientName}</p>
-              <p className="text-[13px] text-muted-foreground mt-0.5">{job.service}</p>
-            </div>
+        <div className="flex-1 min-w-0">
+          {/* Top row: name + badge */}
+          <div className="flex items-center justify-between gap-2">
+            <p className="font-semibold text-sm text-foreground truncate">{job.clientName}</p>
             <StatusBadge status={job.status} />
           </div>
+          {/* Service */}
+          <p className="text-xs text-muted-foreground mt-0.5">{job.service}</p>
 
+          {/* Meta row */}
           {!compact && (
-            <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted-foreground">
+            <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                {job.time}
+                <Clock className="h-3 w-3" /> {job.time}
               </span>
               <span className="flex items-center gap-1">
-                <MapPin className="h-3 w-3" />
-                {job.location}
+                <MapPin className="h-3 w-3" /> {job.location}
               </span>
             </div>
           )}
 
-          <div className="mt-2.5 flex items-center justify-between">
-            <span className="text-[15px] font-bold text-card-foreground flex items-center">
-              <IndianRupee className="h-3.5 w-3.5" />{job.amount.toLocaleString()}
-            </span>
-            <span className={cn(
-              "text-[12px] font-semibold",
-              isPaid ? "text-success" : "text-warning"
-            )}>
-              {isPaid ? "✓ Paid" : `₹${job.paidAmount.toLocaleString()} paid`}
+          {/* Price row */}
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-sm font-bold text-foreground">₹{job.amount.toLocaleString()}</span>
+            <span className={cn("text-xs font-medium", isPaid ? "text-success" : "text-warning")}>
+              {isPaid ? "Paid" : `₹${job.paidAmount.toLocaleString()} paid`}
             </span>
           </div>
         </div>
