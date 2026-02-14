@@ -2,6 +2,7 @@ import { JobStatus } from "@/data/types";
 import { cn } from "@/lib/utils";
 
 const statusConfig: Record<JobStatus, { label: string; className: string }> = {
+  pending: { label: "New Request", className: "bg-accent text-accent-foreground" },
   scheduled: { label: "Scheduled", className: "bg-info/10 text-info" },
   in_progress: { label: "In Progress", className: "bg-warning/10 text-warning" },
   completed: { label: "Completed", className: "bg-success/10 text-success" },

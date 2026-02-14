@@ -23,11 +23,12 @@ export interface Job {
   date: string;
   time: string;
   location: string;
-  status: "scheduled" | "in_progress" | "completed" | "cancelled";
+  status: "pending" | "scheduled" | "in_progress" | "completed" | "cancelled";
   amount: number;
   paidAmount: number;
   notes: string;
   materials: Material[];
+  convertedToEventId?: string;
 }
 
 export interface EventTask {
@@ -52,6 +53,7 @@ export interface FreelancerEvent {
   expenses: number;
   totalPaid: number;
   helpers: string[];
+  convertedFromJobId?: string;
 }
 
 export interface Payment {
@@ -70,6 +72,29 @@ export interface Service {
   name: string;
   category: string;
   defaultRate: number;
+}
+
+export interface InventoryItem {
+  id: string;
+  name: string;
+  category: string;
+  stock: number;
+  unit: string;
+  costPerUnit: number;
+  minStock: number;
+}
+
+export interface Message {
+  id: string;
+  type: "reminder" | "update" | "announcement";
+  title: string;
+  body: string;
+  recipientName: string;
+  recipientId?: string;
+  jobId?: string;
+  eventId?: string;
+  date: string;
+  read: boolean;
 }
 
 export type JobStatus = Job["status"];

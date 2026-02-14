@@ -14,9 +14,10 @@ interface AddJobSheetProps {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  initialStatus?: "pending" | "scheduled";
 }
 
-const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange }: AddJobSheetProps) => {
+const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange, initialStatus = "pending" }: AddJobSheetProps) => {
   const { clients, addJob } = useAppData();
   const [internalOpen, setInternalOpen] = useState(false);
   const [clientId, setClientId] = useState("");
@@ -56,13 +57,13 @@ const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange }: AddJobShee
       date,
       time,
       location: location || client?.location || "",
-      status: "scheduled",
+      status: initialStatus,
       amount: Number(amount) || selectedService?.defaultRate || 0,
       paidAmount: 0,
       notes,
       materials: [],
     });
-    toast.success("Job created!");
+    toast.success(initialStatus === "pending" ? "Request created!" : "Job scheduled!");
     setClientId(""); setService(""); setAmount(""); setNotes(""); setLocation("");
     setOpen(false);
   };
@@ -72,7 +73,7 @@ const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange }: AddJobShee
       {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
       <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle className="text-left text-base">New Job</SheetTitle>
+          <SheetTitle className="text-left text-base">New Request</SheetTitle>
         </SheetHeader>
         <div className="mt-4 space-y-3">
           <div className="flex gap-2">
@@ -126,7 +127,7 @@ const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange }: AddJobShee
           <Textarea placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)} className="rounded-lg text-sm" rows={2} />
 
           <Button onClick={handleSave} className="w-full h-10 rounded-lg text-sm font-semibold">
-            Create Job
+            Create Request
           </Button>
         </div>
       </SheetContent>

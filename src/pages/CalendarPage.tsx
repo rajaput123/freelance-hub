@@ -21,10 +21,12 @@ const CalendarPage = ({ onMenuClick }: CalendarPageProps) => {
   const today = new Date();
   const todayStr = today.toISOString().split("T")[0];
 
-  // Generate week days around current date
+  // Only show scheduled/active/completed on calendar (not pending)
+  const calendarJobs = jobs.filter(j => j.status !== "pending" && j.status !== "cancelled");
+
   const getWeekDays = () => {
     const start = new Date(currentDate);
-    start.setDate(start.getDate() - start.getDay()); // Sunday
+    start.setDate(start.getDate() - start.getDay());
     const days = [];
     for (let i = 0; i < 7; i++) {
       const d = new Date(start);
@@ -39,7 +41,7 @@ const CalendarPage = ({ onMenuClick }: CalendarPageProps) => {
   const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
   const selectedDateStr = currentDate.toISOString().split("T")[0];
-  const dayJobs = jobs.filter(j => j.date === selectedDateStr);
+  const dayJobs = calendarJobs.filter(j => j.date === selectedDateStr);
 
   const prevWeek = () => {
     const d = new Date(currentDate);
@@ -53,7 +55,7 @@ const CalendarPage = ({ onMenuClick }: CalendarPageProps) => {
     setCurrentDate(d);
   };
 
-  const jobCountForDate = (dateStr: string) => jobs.filter(j => j.date === dateStr).length;
+  const jobCountForDate = (dateStr: string) => calendarJobs.filter(j => j.date === dateStr).length;
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -109,14 +111,14 @@ const CalendarPage = ({ onMenuClick }: CalendarPageProps) => {
       {/* Day's jobs */}
       <div className="px-4 mt-4">
         <p className="text-xs font-semibold text-muted-foreground mb-3">
-          {selectedDateStr === todayStr ? "Today" : currentDate.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "short" })} · {dayJobs.length} job{dayJobs.length !== 1 ? "s" : ""}
+          {selectedDateStr === todayStr ? "Today" : currentDate.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "short" })} · {dayJobs.length} booking{dayJobs.length !== 1 ? "s" : ""}
         </p>
 
         {dayJobs.length === 0 ? (
           <div className="border border-dashed border-border rounded-xl p-8 text-center">
             <Calendar className="h-6 w-6 text-muted-foreground mx-auto mb-2" />
-            <p className="text-sm font-medium text-foreground">No jobs scheduled</p>
-            <p className="text-xs text-muted-foreground mt-0.5">Tap + to add a new job</p>
+            <p className="text-sm font-medium text-foreground">No bookings</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Approve requests to see them here</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -127,7 +129,7 @@ const CalendarPage = ({ onMenuClick }: CalendarPageProps) => {
         )}
       </div>
 
-      <AddJobSheet open={showAddJob} onOpenChange={setShowAddJob} />
+      <AddJobSheet open={showAddJob} onOpenChange={setShowAddJob} initialStatus="scheduled" />
       <JobDetailSheet job={selectedJob} open={!!selectedJob} onOpenChange={open => !open && setSelectedJob(null)} />
     </div>
   );

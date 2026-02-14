@@ -1,4 +1,4 @@
-import { Client, Job, FreelancerEvent, Payment, Service } from "./types";
+import { Client, Job, FreelancerEvent, Payment, Service, InventoryItem, Message } from "./types";
 
 export const services: Service[] = [
   { id: "1", name: "Electrical Repair", category: "Electrical", defaultRate: 500 },
@@ -45,6 +45,20 @@ export const clients: Client[] = [
 ];
 
 export const jobs: Job[] = [
+  {
+    id: "j0",
+    clientId: "c2",
+    clientName: "Priya Sharma",
+    service: "Flower Arrangement",
+    date: "2026-02-16",
+    time: "3:00 PM",
+    location: "Koramangala, Bangalore",
+    status: "pending",
+    amount: 1500,
+    paidAmount: 0,
+    notes: "Need flower arrangements for pooja",
+    materials: [],
+  },
   {
     id: "j1",
     clientId: "c1",
@@ -157,4 +171,21 @@ export const payments: Payment[] = [
     date: "2026-02-12",
     type: "partial",
   },
+];
+
+export const inventoryItems: InventoryItem[] = [
+  { id: "inv1", name: "LED Lights", category: "Electrical", stock: 100, unit: "pcs", costPerUnit: 100, minStock: 20 },
+  { id: "inv2", name: "Balloons (Assorted)", category: "Decoration", stock: 500, unit: "pcs", costPerUnit: 10, minStock: 100 },
+  { id: "inv3", name: "Switchboards", category: "Electrical", stock: 15, unit: "pcs", costPerUnit: 200, minStock: 5 },
+  { id: "inv4", name: "Flowers (Rose)", category: "Flowers", stock: 300, unit: "stems", costPerUnit: 25, minStock: 50 },
+  { id: "inv5", name: "Flowers (Marigold)", category: "Flowers", stock: 200, unit: "stems", costPerUnit: 15, minStock: 50 },
+  { id: "inv6", name: "Extension Cables", category: "Electrical", stock: 10, unit: "pcs", costPerUnit: 350, minStock: 3 },
+  { id: "inv7", name: "Fabric Drapes", category: "Decoration", stock: 30, unit: "meters", costPerUnit: 150, minStock: 10 },
+];
+
+export const messages: Message[] = [
+  { id: "m1", type: "reminder", title: "Payment reminder", body: "Reminder: ₹1,500 payment pending for Decoration Setup", recipientName: "Priya Sharma", recipientId: "c2", jobId: "j2", date: "2026-02-14", read: false },
+  { id: "m2", type: "update", title: "Job update sent", body: "Kitchen wiring job has been confirmed for tomorrow", recipientName: "Rajesh Kumar", recipientId: "c1", jobId: "j1", date: "2026-02-13", read: true },
+  { id: "m3", type: "announcement", title: "Wedding season notice", body: "Peak season rates effective from March 1st. Updated pricing in service catalog.", recipientName: "All Clients", date: "2026-02-12", read: true },
+  { id: "m4", type: "update", title: "Event progress update", body: "Sharma Wedding Reception: Flower order confirmed, lighting design in progress", recipientName: "Priya Sharma", recipientId: "c2", eventId: "e1", date: "2026-02-11", read: true },
 ];

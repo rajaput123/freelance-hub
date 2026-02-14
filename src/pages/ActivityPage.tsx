@@ -1,7 +1,8 @@
 import { useAppData } from "@/context/AppContext";
 import PageHeader from "@/components/PageHeader";
-import { ArrowDownLeft, Briefcase, Calendar, MessageSquare, Banknote, Smartphone, Building2 } from "lucide-react";
+import { ArrowDownLeft, Briefcase, Calendar, MessageSquare, Banknote, Smartphone, Building2, Bell, ArrowUpRight, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface ActivityPageProps {
   onMenuClick: () => void;
@@ -9,7 +10,7 @@ interface ActivityPageProps {
 
 type ActivityItem = {
   id: string;
-  type: "booking" | "payment" | "event" | "communication";
+  type: "booking" | "payment" | "event" | "communication" | "inventory";
   title: string;
   subtitle: string;
   date: string;
@@ -18,32 +19,26 @@ type ActivityItem = {
   color: string;
 };
 
-const methodIcons: Record<string, typeof Banknote> = {
-  cash: Banknote,
-  upi: Smartphone,
-  bank: Building2,
-};
-
 const ActivityPage = ({ onMenuClick }: ActivityPageProps) => {
-  const { jobs, payments, events } = useAppData();
+  const { jobs, payments, events, messages } = useAppData();
+  const [filter, setFilter] = useState<"all" | "bookings" | "payments" | "events" | "messages">("all");
 
-  // Build activity feed from all data
   const activities: ActivityItem[] = [
     ...jobs.map(j => ({
       id: `job-${j.id}`,
       type: "booking" as const,
-      title: `${j.service}`,
-      subtitle: `${j.clientName} · ${j.status === "completed" ? "Completed" : j.status === "in_progress" ? "In Progress" : "Scheduled"}`,
+      title: j.service,
+      subtitle: `${j.clientName} · ${j.status === "pending" ? "New Request" : j.status === "completed" ? "Completed" : j.status === "in_progress" ? "In Progress" : j.status === "cancelled" ? "Cancelled" : "Scheduled"}`,
       date: j.date,
       amount: j.amount,
-      icon: Briefcase,
-      color: "bg-primary/8 text-primary",
+      icon: j.status === "pending" ? Bell : j.convertedToEventId ? ArrowUpRight : Briefcase,
+      color: j.status === "pending" ? "bg-accent text-accent-foreground" : j.convertedToEventId ? "bg-info/8 text-info" : "bg-primary/8 text-primary",
     })),
     ...payments.map(p => ({
       id: `pay-${p.id}`,
       type: "payment" as const,
-      title: `Payment received`,
-      subtitle: `${p.clientName} · ${(methodIcons[p.method] ? p.method.toUpperCase() : p.method)} · ${p.type === "partial" ? "Partial" : "Full"}`,
+      title: "Payment received",
+      subtitle: `${p.clientName} · ${p.method.toUpperCase()} · ${p.type === "partial" ? "Partial" : "Full"}`,
       date: p.date,
       amount: p.amount,
       icon: ArrowDownLeft,
@@ -58,10 +53,24 @@ const ActivityPage = ({ onMenuClick }: ActivityPageProps) => {
       icon: Calendar,
       color: "bg-info/8 text-info",
     })),
+    ...messages.map(m => ({
+      id: `msg-${m.id}`,
+      type: "communication" as const,
+      title: m.title,
+      subtitle: `To: ${m.recipientName} · ${m.type}`,
+      date: m.date,
+      icon: MessageSquare,
+      color: m.read ? "bg-muted text-muted-foreground" : "bg-destructive/8 text-destructive",
+    })),
   ].sort((a, b) => b.date.localeCompare(a.date));
 
-  // Group by date
-  const grouped = activities.reduce((acc, item) => {
+  const filtered = filter === "all" ? activities
+    : filter === "bookings" ? activities.filter(a => a.type === "booking")
+    : filter === "payments" ? activities.filter(a => a.type === "payment")
+    : filter === "events" ? activities.filter(a => a.type === "event")
+    : activities.filter(a => a.type === "communication");
+
+  const grouped = filtered.reduce((acc, item) => {
     const key = item.date;
     if (!acc[key]) acc[key] = [];
     acc[key].push(item);
@@ -76,9 +85,35 @@ const ActivityPage = ({ onMenuClick }: ActivityPageProps) => {
     return d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
   };
 
+  const filters = [
+    { key: "all", label: "All" },
+    { key: "bookings", label: "Bookings" },
+    { key: "payments", label: "Payments" },
+    { key: "events", label: "Events" },
+    { key: "messages", label: "Messages" },
+  ] as const;
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <PageHeader title="Activity" onMenuClick={onMenuClick} />
+
+      {/* Filters */}
+      <div className="px-4 mt-3">
+        <div className="flex flex-wrap gap-2">
+          {filters.map(f => (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              className={cn(
+                "rounded-full px-3 py-1 text-xs font-semibold transition-colors",
+                filter === f.key ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+              )}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="px-4 mt-4">
         {Object.keys(grouped).length === 0 ? (
@@ -102,7 +137,7 @@ const ActivityPage = ({ onMenuClick }: ActivityPageProps) => {
                         <p className="font-semibold text-sm truncate">{item.title}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">{item.subtitle}</p>
                       </div>
-                      {item.amount && (
+                      {item.amount !== undefined && (
                         <p className={cn("text-sm font-bold shrink-0", item.type === "payment" ? "text-success" : "text-foreground")}>
                           {item.type === "payment" ? "+" : ""}₹{item.amount.toLocaleString()}
                         </p>

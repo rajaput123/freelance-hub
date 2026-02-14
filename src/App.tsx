@@ -19,7 +19,7 @@ import EventsPage from "./pages/EventsPage";
 import PaymentsPage from "./pages/PaymentsPage";
 import ServiceCatalogPage from "./pages/ServiceCatalogPage";
 import InventoryPage from "./pages/InventoryPage";
-import AnnouncementsPage from "./pages/AnnouncementsPage";
+import CommunicationPage from "./pages/CommunicationPage";
 import ReportsPage from "./pages/ReportsPage";
 import NotFound from "./pages/NotFound";
 
@@ -33,24 +33,24 @@ const AppLayout = () => {
     <>
       <AppSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="mx-auto max-w-lg">
-      <Routes>
-        <Route path="/" element={<HomePage onMenuClick={openSidebar} />} />
-        <Route path="/calendar" element={<CalendarPage onMenuClick={openSidebar} />} />
-        <Route path="/requests" element={<RequestsPage onMenuClick={openSidebar} />} />
-        <Route path="/activity" element={<ActivityPage onMenuClick={openSidebar} />} />
-        <Route path="/more" element={<MorePage onMenuClick={openSidebar} />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/more/jobs" element={<JobsPage />} />
-        <Route path="/more/clients" element={<ClientsPage />} />
-        <Route path="/more/events" element={<EventsPage />} />
-        <Route path="/more/finance" element={<PaymentsPage />} />
-        <Route path="/more/services" element={<ServiceCatalogPage />} />
-        <Route path="/more/inventory" element={<InventoryPage />} />
-        <Route path="/more/announcements" element={<AnnouncementsPage />} />
-        <Route path="/more/reports" element={<ReportsPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <BottomNav />
+        <Routes>
+          <Route path="/" element={<HomePage onMenuClick={openSidebar} />} />
+          <Route path="/calendar" element={<CalendarPage onMenuClick={openSidebar} />} />
+          <Route path="/requests" element={<RequestsPage onMenuClick={openSidebar} />} />
+          <Route path="/activity" element={<ActivityPage onMenuClick={openSidebar} />} />
+          <Route path="/more" element={<MorePage onMenuClick={openSidebar} />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/more/jobs" element={<JobsPage />} />
+          <Route path="/more/clients" element={<ClientsPage />} />
+          <Route path="/more/events" element={<EventsPage />} />
+          <Route path="/more/finance" element={<PaymentsPage />} />
+          <Route path="/more/services" element={<ServiceCatalogPage />} />
+          <Route path="/more/inventory" element={<InventoryPage />} />
+          <Route path="/more/communication" element={<CommunicationPage />} />
+          <Route path="/more/reports" element={<ReportsPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        <BottomNav />
       </div>
     </>
   );
