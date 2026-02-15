@@ -1,6 +1,8 @@
 import { User, Bell, Settings, HelpCircle, LogOut, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 interface AppSidebarProps {
   open: boolean;
@@ -16,9 +18,17 @@ const menuItems = [
 
 const AppSidebar = ({ open, onClose }: AppSidebarProps) => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const handleNav = (path: string) => {
     navigate(path);
+    onClose();
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+    toast.success("Logged out successfully");
     onClose();
   };
 
@@ -39,12 +49,24 @@ const AppSidebar = ({ open, onClose }: AppSidebarProps) => {
             <X className="h-4 w-4 text-primary-foreground" />
           </button>
           <div className="flex items-center gap-3.5 mt-1">
-            <div className="h-14 w-14 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center">
-              <User className="h-7 w-7 text-primary-foreground" />
-            </div>
+            {user?.profilePhoto ? (
+              <img
+                src={user.profilePhoto}
+                alt="Profile"
+                className="h-14 w-14 rounded-2xl object-cover border-2 border-primary-foreground/20"
+              />
+            ) : (
+              <div className="h-14 w-14 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center">
+                <User className="h-7 w-7 text-primary-foreground" />
+              </div>
+            )}
             <div>
-              <h2 className="text-base font-bold text-primary-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Freelancer Pro</h2>
-              <p className="text-[11px] text-primary-foreground/70 mt-0.5">freelancer@example.com</p>
+              <h2 className="text-base font-bold text-primary-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                {user?.name || "Freelancer"}
+              </h2>
+              <p className="text-[11px] text-primary-foreground/70 mt-0.5">
+                {user?.email || user?.phone || "No contact info"}
+              </p>
             </div>
           </div>
         </div>
@@ -65,7 +87,10 @@ const AppSidebar = ({ open, onClose }: AppSidebarProps) => {
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 px-3 pb-8 safe-bottom">
-          <button className="flex items-center gap-3.5 w-full px-3.5 py-3.5 rounded-2xl text-left hover:bg-destructive/5 active:bg-destructive/10 transition-colors">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3.5 w-full px-3.5 py-3.5 rounded-2xl text-left hover:bg-destructive/5 active:bg-destructive/10 transition-colors"
+          >
             <div className="h-10 w-10 rounded-xl bg-destructive/10 flex items-center justify-center">
               <LogOut className="h-[18px] w-[18px] text-destructive" />
             </div>

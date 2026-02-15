@@ -1,17 +1,19 @@
 import { useAppData } from "@/context/AppContext";
 import { useNavigate } from "react-router-dom";
 import StatusBadge from "@/components/StatusBadge";
-import { MapPin, Calendar, Users, ArrowLeft } from "lucide-react";
+import { MapPin, Calendar, Users, ArrowLeft, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import AddEventSheet from "@/components/AddEventSheet";
 
 const EventsPage = () => {
   const { events, toggleEventTask, updateEventStatus } = useAppData();
   const navigate = useNavigate();
   const [tab, setTab] = useState<"active" | "completed">("active");
+  const [showAddEvent, setShowAddEvent] = useState(false);
 
   const activeEvents = events.filter(e => e.status !== "completed");
   const completedEvents = events.filter(e => e.status === "completed");
@@ -24,7 +26,14 @@ const EventsPage = () => {
           <button onClick={() => navigate(-1)} className="h-9 w-9 rounded-xl bg-muted flex items-center justify-center active:scale-95 transition-transform">
             <ArrowLeft className="h-4 w-4" />
           </button>
-          <h1 className="text-lg font-bold" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Events / Projects</h1>
+          <h1 className="text-lg font-bold flex-1" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Events / Projects</h1>
+          <AddEventSheet
+            trigger={
+              <button className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center active:scale-95 transition-transform shadow-glow">
+                <Plus className="h-4 w-4 text-primary-foreground" />
+              </button>
+            }
+            />
         </div>
         <div className="flex bg-card rounded-2xl p-1 shadow-soft">
           {(["active", "completed"] as const).map(t => (
@@ -57,7 +66,11 @@ const EventsPage = () => {
             const profit = event.totalPaid - event.expenses;
 
             return (
-              <div key={event.id} className="bg-card rounded-2xl overflow-hidden shadow-soft">
+              <div
+                key={event.id}
+                onClick={() => navigate(`/event/${event.id}`)}
+                className="bg-card rounded-2xl overflow-hidden shadow-soft cursor-pointer active:scale-[0.98] transition-transform"
+              >
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
@@ -84,7 +97,11 @@ const EventsPage = () => {
 
                 <div className="px-4 pb-2 space-y-0.5">
                   {event.tasks.map(task => (
-                    <div key={task.id} className="flex items-center gap-2.5 py-2 px-1.5 rounded-xl active:bg-muted/40 transition-colors">
+                    <div
+                      key={task.id}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-2.5 py-2 px-1.5 rounded-xl active:bg-muted/40 transition-colors"
+                    >
                       <Checkbox checked={task.completed} onCheckedChange={() => toggleEventTask(event.id, task.id)} className="h-4 w-4" />
                       <div className="flex-1 min-w-0">
                         <p className={cn("text-xs font-semibold", task.completed && "line-through text-muted-foreground")}>{task.title}</p>
@@ -120,20 +137,6 @@ const EventsPage = () => {
                   </div>
                 </div>
 
-                {event.status !== "completed" && (
-                  <div className="border-t border-border p-4">
-                    <Button
-                      className="w-full rounded-xl h-11 text-sm font-bold gradient-primary shadow-glow border-0"
-                      onClick={() => {
-                        const next = event.status === "planning" ? "in_progress" : "completed";
-                        updateEventStatus(event.id, next as typeof event.status);
-                        toast.success(next === "in_progress" ? "Event started!" : "Event completed!");
-                      }}
-                    >
-                      {event.status === "planning" ? "Start Event" : "Mark Complete"}
-                    </Button>
-                  </div>
-                )}
               </div>
             );
           })

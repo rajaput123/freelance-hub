@@ -21,10 +21,20 @@ interface AppContextType {
   updateJobStatus: (jobId: string, status: Job["status"]) => void;
   updateJobNotes: (jobId: string, notes: string) => void;
   addJobMaterials: (jobId: string, materials: Job["materials"]) => void;
+  addJobExpense: (jobId: string, description: string, amount: number) => void;
   addPayment: (payment: Omit<Payment, "id">) => void;
   addEvent: (event: Omit<FreelancerEvent, "id">) => FreelancerEvent;
   updateEventStatus: (eventId: string, status: FreelancerEvent["status"]) => void;
   toggleEventTask: (eventId: string, taskId: string) => void;
+  addEventTask: (eventId: string, title: string, deadline: string) => void;
+  addEventMaterial: (eventId: string, name: string, qty: number, cost: number) => void;
+  addEventExpense: (eventId: string, description: string, amount: number) => void;
+  updateEventBudget: (eventId: string, budget: number) => void;
+  updateEventNotes: (eventId: string, notes: string) => void;
+  addEventHelper: (eventId: string, helperName: string) => void;
+  removeEventHelper: (eventId: string, helperName: string) => void;
+  addEventSupplier: (eventId: string, supplierName: string) => void;
+  removeEventSupplier: (eventId: string, supplierName: string) => void;
   convertJobToEvent: (jobId: string) => void;
   addInventoryItem: (item: Omit<InventoryItem, "id">) => void;
   updateInventoryStock: (itemId: string, delta: number) => void;
@@ -61,12 +71,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   const addJob = useCallback((data: Omit<Job, "id">) => {
-    const newJob: Job = { ...data, id: `j${Date.now()}` };
+    const newJob: Job = { ...data, expenses: data.expenses || 0, id: `j${Date.now()}` };
     setJobs(prev => [newJob, ...prev]);
   }, []);
 
   const updateJobStatus = useCallback((jobId: string, status: Job["status"]) => {
     setJobs(prev => prev.map(j => j.id === jobId ? { ...j, status } : j));
+  }, []);
+
+  const updateJobSchedule = useCallback((jobId: string, date: string, time: string) => {
+    setJobs(prev => prev.map(j => j.id === jobId ? { ...j, date, time } : j));
   }, []);
 
   const updateJobNotes = useCallback((jobId: string, notes: string) => {
@@ -84,6 +98,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         return inv;
       }));
     });
+  }, []);
+
+  const addJobExpense = useCallback((jobId: string, description: string, amount: number) => {
+    setJobs(prev => prev.map(j =>
+      j.id === jobId ? { ...j, expenses: (j.expenses || 0) + amount } : j
+    ));
   }, []);
 
   const addPayment = useCallback((data: Omit<Payment, "id">) => {
@@ -115,6 +135,81 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     ));
   }, []);
 
+  const addEventTask = useCallback((eventId: string, title: string, deadline: string) => {
+    setEvents(prev => prev.map(e =>
+      e.id === eventId
+        ? { ...e, tasks: [...e.tasks, { id: `t${Date.now()}`, title, deadline, completed: false }] }
+        : e
+    ));
+  }, []);
+
+  const addEventMaterial = useCallback((eventId: string, name: string, qty: number, cost: number) => {
+    setEvents(prev => prev.map(e =>
+      e.id === eventId
+        ? { ...e, materials: [...e.materials, { name, qty, cost }] }
+        : e
+    ));
+    // Auto-deduct from inventory
+    setInventory(prev => prev.map(inv => {
+      if (inv.name.toLowerCase().includes(name.toLowerCase())) {
+        return { ...inv, stock: Math.max(0, inv.stock - qty) };
+      }
+      return inv;
+    }));
+  }, []);
+
+  const addEventExpense = useCallback((eventId: string, description: string, amount: number) => {
+    setEvents(prev => prev.map(e =>
+      e.id === eventId
+        ? { ...e, expenses: e.expenses + amount }
+        : e
+    ));
+  }, []);
+
+  const updateEventBudget = useCallback((eventId: string, budget: number) => {
+    setEvents(prev => prev.map(e => e.id === eventId ? { ...e, budget } : e));
+  }, []);
+
+  const updateEventNotes = useCallback((eventId: string, notes: string) => {
+    setEvents(prev => prev.map(e => e.id === eventId ? { ...e, notes } : e));
+  }, []);
+
+  const addEventHelper = useCallback((eventId: string, helperName: string) => {
+    setEvents(prev => prev.map(e => {
+      if (e.id === eventId) {
+        const helpers = e.helpers || [];
+        if (!helpers.includes(helperName.trim())) {
+          return { ...e, helpers: [...helpers, helperName.trim()] };
+        }
+      }
+      return e;
+    }));
+  }, []);
+
+  const removeEventHelper = useCallback((eventId: string, helperName: string) => {
+    setEvents(prev => prev.map(e =>
+      e.id === eventId ? { ...e, helpers: (e.helpers || []).filter(h => h !== helperName) } : e
+    ));
+  }, []);
+
+  const addEventSupplier = useCallback((eventId: string, supplierName: string) => {
+    setEvents(prev => prev.map(e => {
+      if (e.id === eventId) {
+        const suppliers = e.suppliers || [];
+        if (!suppliers.includes(supplierName.trim())) {
+          return { ...e, suppliers: [...suppliers, supplierName.trim()] };
+        }
+      }
+      return e;
+    }));
+  }, []);
+
+  const removeEventSupplier = useCallback((eventId: string, supplierName: string) => {
+    setEvents(prev => prev.map(e =>
+      e.id === eventId ? { ...e, suppliers: (e.suppliers || []).filter(s => s !== supplierName) } : e
+    ));
+  }, []);
+
   const convertJobToEvent = useCallback((jobId: string) => {
     setJobs(prev => {
       const job = prev.find(j => j.id === jobId);
@@ -136,6 +231,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         expenses: job.materials.reduce((s, m) => s + m.cost, 0),
         totalPaid: job.paidAmount,
         helpers: [],
+        suppliers: [],
         convertedFromJobId: jobId,
       };
       setEvents(prevEvents => [newEvent, ...prevEvents]);
@@ -165,8 +261,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   return (
     <AppContext.Provider value={{
       clients, jobs, events, payments, inventory, messages,
-      addClient, addJob, updateJobStatus, updateJobNotes, addJobMaterials,
-      addPayment, addEvent, updateEventStatus, toggleEventTask,
+      addClient, addJob, updateJobStatus, updateJobSchedule, updateJobNotes, addJobMaterials, addJobExpense,
+      addPayment, addEvent, updateEventStatus, toggleEventTask, addEventTask,
+      addEventMaterial, addEventExpense, updateEventBudget, updateEventNotes,
+      addEventHelper, removeEventHelper, addEventSupplier, removeEventSupplier,
       convertJobToEvent, addInventoryItem, updateInventoryStock,
       addMessage, markMessageRead,
     }}>

@@ -28,6 +28,7 @@ export interface Job {
   paidAmount: number;
   notes: string;
   materials: Material[];
+  expenses: number;
   convertedToEventId?: string;
 }
 
@@ -53,6 +54,8 @@ export interface FreelancerEvent {
   expenses: number;
   totalPaid: number;
   helpers: string[];
+  suppliers?: string[]; // Supplier contacts/vendors
+  notes?: string;
   convertedFromJobId?: string;
 }
 

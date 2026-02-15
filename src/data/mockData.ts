@@ -58,6 +58,7 @@ export const jobs: Job[] = [
     paidAmount: 0,
     notes: "Need flower arrangements for pooja",
     materials: [],
+    expenses: 0,
   },
   {
     id: "j1",
@@ -72,6 +73,7 @@ export const jobs: Job[] = [
     paidAmount: 0,
     notes: "Fix kitchen wiring",
     materials: [],
+    expenses: 0,
   },
   {
     id: "j2",
@@ -86,6 +88,7 @@ export const jobs: Job[] = [
     paidAmount: 1500,
     notes: "Birthday party decoration",
     materials: [{ name: "Balloons", qty: 50, cost: 500 }],
+    expenses: 0,
   },
   {
     id: "j3",
@@ -100,6 +103,7 @@ export const jobs: Job[] = [
     paidAmount: 0,
     notes: "New house wiring",
     materials: [],
+    expenses: 0,
   },
   {
     id: "j4",
@@ -114,6 +118,7 @@ export const jobs: Job[] = [
     paidAmount: 800,
     notes: "Replaced switchboard",
     materials: [{ name: "Switchboard", qty: 1, cost: 200 }],
+    expenses: 0,
   },
 ];
 
@@ -140,6 +145,7 @@ export const events: FreelancerEvent[] = [
     expenses: 20000,
     totalPaid: 50000,
     helpers: ["Suresh - Electrician", "Ravi - Assistant"],
+    suppliers: ["ABC Flowers", "XYZ Lighting Co"],
   },
 ];
 

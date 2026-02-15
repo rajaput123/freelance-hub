@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { useAppData } from "@/context/AppContext";
-import { services } from "@/data/mockData";
+import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import AddClientSheet from "./AddClientSheet";
 
@@ -19,6 +19,7 @@ interface AddJobSheetProps {
 
 const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange, initialStatus = "pending" }: AddJobSheetProps) => {
   const { clients, addJob } = useAppData();
+  const { user } = useAuth();
   const [internalOpen, setInternalOpen] = useState(false);
   const [clientId, setClientId] = useState("");
   const [service, setService] = useState("");
@@ -31,15 +32,18 @@ const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange, initialStatu
   const isOpen = controlledOpen ?? internalOpen;
   const setOpen = onOpenChange ?? setInternalOpen;
 
+  // Use user's services instead of mock data
+  const userServices = user?.services || [];
+
   const selectedClient = clients.find(c => c.id === clientId);
-  const selectedService = services.find(s => s.name === service);
+  const selectedService = userServices.find(s => s.name === service);
 
   const handleClientAdded = (newClientId: string) => { setClientId(newClientId); };
 
   const handleServiceChange = (val: string) => {
     setService(val);
-    const svc = services.find(s => s.name === val);
-    if (svc && !amount) setAmount(String(svc.defaultRate));
+    const svc = userServices.find(s => s.name === val);
+    if (svc && !amount) setAmount(String(svc.price));
   };
 
   const handleSave = () => {
@@ -53,7 +57,7 @@ const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange, initialStatu
       time,
       location: location || client?.location || "",
       status: initialStatus,
-      amount: Number(amount) || selectedService?.defaultRate || 0,
+      amount: Number(amount) || selectedService?.price || 0,
       paidAmount: 0,
       notes,
       materials: [],
@@ -88,7 +92,15 @@ const AddJobSheet = ({ trigger, open: controlledOpen, onOpenChange, initialStatu
           <Select value={service} onValueChange={handleServiceChange}>
             <SelectTrigger className="h-11 rounded-xl text-sm"><SelectValue placeholder="Select service" /></SelectTrigger>
             <SelectContent>
-              {services.map(s => (<SelectItem key={s.id} value={s.name}>{s.name} — ₹{s.defaultRate}</SelectItem>))}
+              {userServices.length === 0 ? (
+                <SelectItem value="" disabled>No services added. Add services in Service Catalog.</SelectItem>
+              ) : (
+                userServices.map((s, idx) => (
+                  <SelectItem key={idx} value={s.name}>
+                    {s.name} — ₹{s.price.toLocaleString()} {s.category && `(${s.category})`}
+                  </SelectItem>
+                ))
+              )}
             </SelectContent>
           </Select>
 

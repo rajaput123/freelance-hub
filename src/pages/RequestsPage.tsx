@@ -1,12 +1,15 @@
 import { useAppData } from "@/context/AppContext";
 import { useState } from "react";
 import { Job } from "@/data/types";
+import RequestCard from "@/components/RequestCard";
 import JobCard from "@/components/JobCard";
 import JobDetailSheet from "@/components/JobDetailSheet";
+import JobExecutionSheet from "@/components/JobExecutionSheet";
+import RequestActionSheet from "@/components/RequestActionSheet";
+import RescheduleSheet from "@/components/RescheduleSheet";
 import PageHeader from "@/components/PageHeader";
-import AddJobSheet from "@/components/AddJobSheet";
 import { cn } from "@/lib/utils";
-import { ClipboardList, Plus, Inbox, Clock, Zap, CheckCircle2 } from "lucide-react";
+import { ClipboardList, Inbox, Clock, Zap, CheckCircle2 } from "lucide-react";
 
 interface RequestsPageProps {
   onMenuClick: () => void;
@@ -15,52 +18,103 @@ interface RequestsPageProps {
 const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
   const { jobs } = useAppData();
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [showAddJob, setShowAddJob] = useState(false);
-  const [tab, setTab] = useState<"new" | "scheduled" | "active" | "done">("new");
+  const [selectedRequest, setSelectedRequest] = useState<Job | null>(null);
+  const [showReschedule, setShowReschedule] = useState(false);
+  const [showExecution, setShowExecution] = useState(false);
+  const [tab, setTab] = useState<"incoming" | "scheduled" | "active" | "completed">("incoming");
 
-  const newRequests = jobs.filter(j => j.status === "pending");
+  const incomingRequests = jobs.filter(j => j.status === "pending");
   const scheduled = jobs.filter(j => j.status === "scheduled");
   const active = jobs.filter(j => j.status === "in_progress");
-  const done = jobs.filter(j => j.status === "completed");
+  const completed = jobs.filter(j => j.status === "completed");
 
   const tabData = {
-    new: { items: newRequests, label: "New", count: newRequests.length, icon: Inbox, emptyTitle: "No new requests", emptyDesc: "Create a request with the + button" },
-    scheduled: { items: scheduled, label: "Approved", count: scheduled.length, icon: Clock, emptyTitle: "No scheduled tasks", emptyDesc: "Approve new requests to schedule them" },
-    active: { items: active, label: "Active", count: active.length, icon: Zap, emptyTitle: "No active tasks", emptyDesc: "Start a scheduled task to begin" },
-    done: { items: done, label: "Done", count: done.length, icon: CheckCircle2, emptyTitle: "No completed tasks", emptyDesc: "Complete tasks to see them here" },
+    incoming: { 
+      items: incomingRequests, 
+      label: "Incoming", 
+      count: incomingRequests.length, 
+      icon: Inbox, 
+      emptyTitle: "No new requests", 
+      emptyDesc: "New service requests will appear here" 
+    },
+    scheduled: { 
+      items: scheduled, 
+      label: "Scheduled", 
+      count: scheduled.length, 
+      icon: Clock, 
+      emptyTitle: "No scheduled bookings", 
+      emptyDesc: "Accepted requests will appear here" 
+    },
+    active: { 
+      items: active, 
+      label: "Active", 
+      count: active.length, 
+      icon: Zap, 
+      emptyTitle: "No active jobs", 
+      emptyDesc: "Jobs in progress will appear here" 
+    },
+    completed: { 
+      items: completed, 
+      label: "Completed", 
+      count: completed.length, 
+      icon: CheckCircle2, 
+      emptyTitle: "No completed jobs", 
+      emptyDesc: "Completed jobs will appear here" 
+    },
   };
 
   const displayed = tabData[tab].items;
   const EmptyIcon = tabData[tab].icon;
 
+  const handleAccept = (request: Job) => {
+    setSelectedRequest(request);
+    setShowReschedule(false); // Ensure reschedule sheet is closed
+  };
+
+  const handleReschedule = (request: Job) => {
+    setSelectedRequest(request);
+    setShowReschedule(true);
+  };
+
+  const handleDecline = (request: Job) => {
+    setSelectedRequest(request);
+    setShowReschedule(false); // Ensure reschedule sheet is closed
+  };
+
+  const handleStartJob = (job: Job) => {
+    setSelectedJob(job);
+    setShowExecution(true);
+  };
+
   return (
     <div className="min-h-screen bg-background pb-24">
       <PageHeader
-        title="Requests & Tasks"
+        title="Requests & Bookings"
         onMenuClick={onMenuClick}
-        action={{ onClick: () => setShowAddJob(true), icon: <Plus className="h-[18px] w-[18px] text-primary-foreground" /> }}
       />
 
-      {/* Summary strip */}
-      {newRequests.length > 0 && tab !== "new" && (
+      {/* New Requests Alert */}
+      {incomingRequests.length > 0 && tab !== "incoming" && (
         <div className="px-4 -mt-3">
           <button
-            onClick={() => setTab("new")}
+            onClick={() => setTab("incoming")}
             className="w-full gradient-primary rounded-2xl p-3 flex items-center gap-3 active:scale-[0.98] transition-all shadow-glow"
           >
             <div className="h-9 w-9 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
               <Inbox className="h-4 w-4 text-primary-foreground" />
             </div>
-            <p className="text-sm font-bold flex-1 text-left text-primary-foreground">{newRequests.length} new request{newRequests.length > 1 ? "s" : ""} waiting</p>
+            <p className="text-sm font-bold flex-1 text-left text-primary-foreground">
+              {incomingRequests.length} new request{incomingRequests.length > 1 ? "s" : ""} waiting
+            </p>
             <span className="text-xs text-primary-foreground/80 font-semibold">Review →</span>
           </button>
         </div>
       )}
 
-      {/* Tab switcher */}
-      <div className={cn("px-4", newRequests.length > 0 && tab !== "new" ? "mt-3" : "-mt-3")}>
+      {/* Tab Switcher */}
+      <div className={cn("px-4", incomingRequests.length > 0 && tab !== "incoming" ? "mt-3" : "-mt-3")}>
         <div className="flex bg-card rounded-2xl p-1 shadow-soft">
-          {(["new", "scheduled", "active", "done"] as const).map(t => (
+          {(["incoming", "scheduled", "active", "completed"] as const).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -83,15 +137,15 @@ const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
         </div>
       </div>
 
-      {/* Lifecycle indicator */}
+      {/* Workflow Indicator */}
       <div className="px-4 mt-3">
         <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-          {["Request", "Approve", "Execute", "Complete"].map((step, i) => (
+          {["Request", "Accept", "Execute", "Complete"].map((step, i) => (
             <span key={step} className="flex items-center gap-1.5">
               {i > 0 && <span className="text-border">→</span>}
               <span className={cn(
                 "font-bold",
-                (i === 0 && tab === "new") || (i === 1 && tab === "scheduled") || (i === 2 && tab === "active") || (i === 3 && tab === "done")
+                (i === 0 && tab === "incoming") || (i === 1 && tab === "scheduled") || (i === 2 && tab === "active") || (i === 3 && tab === "completed")
                   ? "text-primary" : ""
               )}>{step}</span>
             </span>
@@ -100,7 +154,7 @@ const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
       </div>
 
       {/* List */}
-      <div className="px-4 mt-3 space-y-2.5">
+      <div className="px-4 mt-3 space-y-3">
         {displayed.length === 0 ? (
           <div className="bg-card rounded-2xl p-10 text-center shadow-soft">
             <div className="h-12 w-12 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-3">
@@ -110,14 +164,80 @@ const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
             <p className="text-xs text-muted-foreground mt-1">{tabData[tab].emptyDesc}</p>
           </div>
         ) : (
-          displayed.map(job => (
-            <JobCard key={job.id} job={job} onClick={() => setSelectedJob(job)} />
-          ))
+          displayed.map(job => {
+            if (tab === "incoming") {
+              return (
+                <RequestCard
+                  key={job.id}
+                  request={job}
+                  onClick={() => setSelectedRequest(job)}
+                  onAccept={() => handleAccept(job)}
+                  onReschedule={() => handleReschedule(job)}
+                  onDecline={() => handleDecline(job)}
+                />
+              );
+            } else {
+              return (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  onClick={() => {
+                    setSelectedJob(job);
+                    if (job.status === "in_progress") {
+                      setShowExecution(true);
+                    }
+                  }}
+                />
+              );
+            }
+          })
         )}
       </div>
 
-      <AddJobSheet open={showAddJob} onOpenChange={setShowAddJob} />
-      <JobDetailSheet job={selectedJob} open={!!selectedJob} onOpenChange={open => !open && setSelectedJob(null)} />
+      {/* Sheets */}
+      <RequestActionSheet
+        request={selectedRequest}
+        open={!!selectedRequest && !showReschedule}
+        onOpenChange={(open) => {
+          if (!open) setSelectedRequest(null);
+        }}
+        onReschedule={() => {
+          setShowReschedule(true);
+        }}
+      />
+
+      <RescheduleSheet
+        request={selectedRequest}
+        open={showReschedule}
+        onOpenChange={(open) => {
+          setShowReschedule(open);
+          if (!open) setSelectedRequest(null);
+        }}
+      />
+
+      <JobDetailSheet
+        job={selectedJob}
+        open={!!selectedJob && !showExecution && selectedJob?.status !== "in_progress"}
+        onOpenChange={(open) => {
+          if (!open) setSelectedJob(null);
+        }}
+      />
+
+      <JobExecutionSheet
+        job={selectedJob}
+        open={showExecution}
+        onOpenChange={(open) => {
+          setShowExecution(open);
+          if (!open && selectedJob?.status === "completed") {
+            // Keep job selected to show payment prompt
+            setTimeout(() => {
+              // JobDetailSheet will handle payment prompt
+            }, 300);
+          } else if (!open) {
+            setSelectedJob(null);
+          }
+        }}
+      />
     </div>
   );
 };
