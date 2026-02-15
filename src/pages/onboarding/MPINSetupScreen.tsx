@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 const MPINSetupScreen = () => {
   const navigate = useNavigate();
-  const { user, updateUser, completeOnboarding, logout } = useAuth();
+  const { user, updateUser, completeOnboarding } = useAuth();
   const [mpin, setMpin] = useState("");
   const [confirmMpin, setConfirmMpin] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -25,9 +25,12 @@ const MPINSetupScreen = () => {
         try {
           updateUser({ mpin });
           completeOnboarding();
-          toast.success("Registration complete! Please login to continue.");
-          logout();
-          navigate("/login");
+          toast.success("Registration complete! Welcome to FieldHand!");
+          
+          // Wait for state to update before navigating
+          setTimeout(() => {
+            navigate("/", { replace: true });
+          }, 500);
         } catch (error) {
           toast.error("Something went wrong. Please try again.");
         } finally {

@@ -9,6 +9,7 @@ import AuthenticatedLayout, { useSidebarControl } from "@/components/Authenticat
 import ProtectedRoute from "@/components/ProtectedRoute";
 import SplashScreen from "./pages/SplashScreen";
 import LoginScreen from "./pages/LoginScreen";
+import RegisterScreen from "./pages/RegisterScreen";
 import OTPVerifyScreen from "./pages/OTPVerifyScreen";
 import BasicInfoScreen from "./pages/onboarding/BasicInfoScreen";
 import ServiceAreaScreen from "./pages/onboarding/ServiceAreaScreen";
@@ -74,6 +75,7 @@ const AppLayout = () => {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginScreen />} />
+          <Route path="/register" element={<RegisterScreen />} />
           <Route path="/otp-verify" element={<OTPVerifyScreen />} />
           <Route path="/mpin-verify" element={<MPINVerifyScreen />} />
           

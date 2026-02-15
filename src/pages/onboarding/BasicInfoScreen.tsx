@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowRight, Loader2 } from "lucide-react";
@@ -19,13 +19,29 @@ const workCategories = [
 
 const BasicInfoScreen = () => {
   const navigate = useNavigate();
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, isAuthenticated } = useAuth();
   const [name, setName] = useState(user?.name || "");
   const [workCategory, setWorkCategory] = useState(user?.workCategory || "");
   const [businessName, setBusinessName] = useState(user?.businessName || "");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Redirect if onboarding is already complete
+  useEffect(() => {
+    if (isAuthenticated && user?.onboardingComplete) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
+
   const handleNext = async () => {
+    if (!name.trim()) {
+      toast.error("Please enter your name");
+      return;
+    }
+    if (!workCategory) {
+      toast.error("Please select your work category");
+      return;
+    }
+    
     setIsLoading(true);
     try {
       updateUser({ name, workCategory, businessName: businessName || undefined });
@@ -101,7 +117,7 @@ const BasicInfoScreen = () => {
 
           <button
             onClick={handleNext}
-            disabled={isLoading}
+            disabled={isLoading || !name.trim() || !workCategory}
             className="w-full gradient-primary h-14 rounded-2xl text-primary-foreground font-bold text-base flex items-center justify-center gap-2 shadow-glow active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-8"
           >
             {isLoading ? (

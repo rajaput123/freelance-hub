@@ -2,14 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Phone, Loader2 } from "lucide-react";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { toast } from "sonner";
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
   const navigate = useNavigate();
-  const { verifyMPIN, isAuthenticated, user } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [mpin, setMpin] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   // Redirect to dashboard if already authenticated
@@ -27,36 +25,21 @@ const LoginScreen = () => {
       return;
     }
     
-    if (!mpin || mpin.length !== 4) {
-      toast.error("Please enter your 4-digit MPIN");
-      return;
-    }
-    
     setIsLoading(true);
     
     try {
-      const isValid = await verifyMPIN(mpin, phoneNumber);
-      toast.success("Login successful!");
-      
-      // Wait for state to update and localStorage to be saved
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Navigate to dashboard after login
-      navigate("/", { replace: true });
+      await login(phoneNumber);
+      toast.success("OTP sent successfully!");
+      navigate("/otp-verify", { 
+        state: { 
+          phoneOrEmail: phoneNumber, 
+          isRegisterMode: true 
+        } 
+      });
     } catch (error) {
-      toast.success("Login successful!");
-      // Still navigate even on error (no validation)
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      navigate("/", { replace: true });
+      toast.error("Failed to send OTP. Please try again.");
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleMPINComplete = (value: string) => {
-    setMpin(value);
-    if (value.length === 4) {
-      handleSubmit(new Event("submit") as any);
     }
   };
 
@@ -66,10 +49,10 @@ const LoginScreen = () => {
         {/* Header */}
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-foreground mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Login
+            Create Account
           </h1>
           <p className="text-muted-foreground">
-            Enter your mobile number and MPIN to continue
+            Enter your mobile number to get started
           </p>
         </div>
 
@@ -97,54 +80,31 @@ const LoginScreen = () => {
             </div>
           </div>
 
-          {/* MPIN */}
-          <div>
-            <label className="text-sm font-medium text-foreground mb-3 block">
-              MPIN
-            </label>
-            <div className="flex justify-center">
-              <InputOTP
-                maxLength={4}
-                value={mpin}
-                onChange={setMpin}
-                onComplete={handleMPINComplete}
-                disabled={isLoading}
-              >
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} className="h-14 w-14 rounded-xl text-lg font-bold border-2" />
-                  <InputOTPSlot index={1} className="h-14 w-14 rounded-xl text-lg font-bold border-2" />
-                  <InputOTPSlot index={2} className="h-14 w-14 rounded-xl text-lg font-bold border-2" />
-                  <InputOTPSlot index={3} className="h-14 w-14 rounded-xl text-lg font-bold border-2" />
-                </InputOTPGroup>
-              </InputOTP>
-            </div>
-          </div>
-
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading || phoneNumber.length !== 10 || mpin.length !== 4}
+            disabled={isLoading || phoneNumber.length !== 10}
             className="w-full gradient-primary h-14 rounded-xl text-primary-foreground font-bold text-base flex items-center justify-center gap-2 shadow-glow active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-8"
           >
             {isLoading ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
-                Logging in...
+                Sending OTP...
               </>
             ) : (
-              "Login"
+              "Continue"
             )}
           </button>
         </form>
 
-        {/* Link to Register */}
+        {/* Link to Login */}
         <div className="mt-8 text-center">
           <button
             type="button"
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/login")}
             className="text-sm text-muted-foreground"
           >
-            New user? <span className="text-primary font-semibold">Register</span>
+            Already have an account? <span className="text-primary font-semibold">Login</span>
           </button>
         </div>
       </div>
@@ -152,4 +112,4 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;

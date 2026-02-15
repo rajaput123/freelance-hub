@@ -104,6 +104,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               email: pendingAuth.includes("@") ? pendingAuth : undefined,
               onboardingComplete: false,
             };
+            // Save to localStorage immediately
+            localStorage.setItem("freelancer_user", JSON.stringify(newUser));
             setUser(newUser);
             sessionStorage.removeItem("pending_auth");
             resolve({ isExistingUser: false, needsMPIN: false }); // New user, needs onboarding
@@ -171,15 +173,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateUser = (updates: Partial<User>) => {
     setUser((prev) => {
-      if (!prev) return prev;
-      return { ...prev, ...updates };
+      if (!prev) {
+        // If no user exists, create a new one with the updates
+        const newUser: User = {
+          id: `user_${Date.now()}`,
+          onboardingComplete: false,
+          ...updates,
+        };
+        // Save immediately to localStorage
+        localStorage.setItem("freelancer_user", JSON.stringify(newUser));
+        return newUser;
+      }
+      const updatedUser = { ...prev, ...updates };
+      // Save immediately to localStorage
+      localStorage.setItem("freelancer_user", JSON.stringify(updatedUser));
+      return updatedUser;
     });
   };
 
   const completeOnboarding = () => {
     setUser((prev) => {
-      if (!prev) return prev;
-      return { ...prev, onboardingComplete: true };
+      if (!prev) {
+        // If no user exists, create a default one
+        const defaultUser: User = {
+          id: `user_${Date.now()}`,
+          onboardingComplete: true,
+        };
+        localStorage.setItem("freelancer_user", JSON.stringify(defaultUser));
+        return defaultUser;
+      }
+      const updatedUser = { ...prev, onboardingComplete: true };
+      // Save immediately to localStorage
+      localStorage.setItem("freelancer_user", JSON.stringify(updatedUser));
+      return updatedUser;
     });
   };
 

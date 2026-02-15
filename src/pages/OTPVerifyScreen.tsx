@@ -8,13 +8,20 @@ import { toast } from "sonner";
 const OTPVerifyScreen = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { verifyOTP, updateUser, completeOnboarding } = useAuth();
+  const { verifyOTP, updateUser, completeOnboarding, user, isAuthenticated } = useAuth();
   const [otp, setOtp] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
 
   const phoneOrEmail = location.state?.phoneOrEmail || "";
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user?.onboardingComplete) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
 
   useEffect(() => {
     // Countdown timer for resend
@@ -35,28 +42,23 @@ const OTPVerifyScreen = () => {
         const isRegisterMode = location.state?.isRegisterMode || false;
         
         if (result.isExistingUser) {
-          // Skip MPIN verification and go directly to dashboard
+          // Existing user - ensure onboarding is complete
+          completeOnboarding();
           toast.success("Login successful!");
-          navigate("/");
+          // Wait for state to update before navigating
+          setTimeout(() => {
+            navigate("/", { replace: true });
+          }, 500);
         } else {
           // New user
           if (isRegisterMode) {
-            // Dummy registration - auto complete onboarding with dummy data
-            updateUser({
-              name: "John Doe",
-              workCategory: "Plumbing",
-              city: "Mumbai",
-              coverageArea: "South Mumbai",
-              description: "Experienced service provider",
-              services: [{ name: "AC Repair", price: 500, duration: "1 hour" }],
-              mpin: "1234",
-            });
-            completeOnboarding();
+            // New user registration - navigate to onboarding flow
+            toast.success("OTP verified! Let's set up your profile.");
             
-            toast.success("Registration successful! Welcome to FieldHand!");
+            // Small delay before navigating to onboarding
             setTimeout(() => {
-              navigate("/");
-            }, 1500);
+              navigate("/onboarding/basic-info", { replace: true });
+            }, 500);
           } else {
             // User tried to login but doesn't exist - show error and redirect to login
             toast.error("Account not found. Please register first.");
@@ -89,7 +91,10 @@ const OTPVerifyScreen = () => {
       {/* Header */}
       <div className="gradient-primary rounded-b-3xl shadow-lg pt-12 pb-8 px-6">
         <button
-          onClick={() => navigate("/login")}
+          onClick={() => {
+            const isRegisterMode = location.state?.isRegisterMode || false;
+            navigate(isRegisterMode ? "/register" : "/login");
+          }}
           className="mb-6 h-10 w-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-primary-foreground active:scale-95 transition-transform"
         >
           <ArrowLeft className="h-5 w-5" />
