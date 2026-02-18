@@ -26,32 +26,36 @@ const RequestCard = ({ request, onClick, onAccept, onReschedule, onDecline }: Re
       <div className="flex items-start gap-4">
         {/* Client Avatar */}
         <div className="h-14 w-14 rounded-2xl gradient-primary text-primary-foreground flex items-center justify-center font-bold text-base shadow-md shrink-0">
-          {request.clientName.charAt(0)}
+          {(request.clientName || request.freelancerName || "?").charAt(0).toUpperCase()}
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2 mb-1.5">
-            <p className="font-bold text-base text-foreground truncate">{request.clientName}</p>
+            <p className="font-bold text-base text-foreground truncate">{request.clientName || request.freelancerName || "Unknown"}</p>
             <StatusBadge status={request.status} />
           </div>
 
-          <p className="text-sm text-muted-foreground font-medium mb-2">{request.service}</p>
+          <p className="text-sm text-muted-foreground font-medium mb-2">{request.service || request.taskName || "Service"}</p>
 
           {/* Request Details */}
           <div className="space-y-1.5 mb-3">
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Clock className="h-3.5 w-3.5" />
-              <span>Preferred: {request.date} at {request.time}</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5" />
-              <span>{request.location}</span>
-            </div>
-            {request.notes && (
+            {request.date && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" />
+                <span>Preferred: {request.date}{request.time ? ` at ${request.time}` : ""}</span>
+              </div>
+            )}
+            {request.location && (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <MapPin className="h-3.5 w-3.5" />
+                <span>{request.location}</span>
+              </div>
+            )}
+            {(request.notes || request.taskDescription) && (
               <div className="flex items-start gap-1.5 text-xs text-muted-foreground">
                 <MessageSquare className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                <span className="italic">"{request.notes}"</span>
+                <span className="italic">"{request.notes || request.taskDescription}"</span>
               </div>
             )}
           </div>
@@ -59,7 +63,7 @@ const RequestCard = ({ request, onClick, onAccept, onReschedule, onDecline }: Re
           {/* Amount */}
           <div className="flex items-center justify-between mb-3">
             <span className="text-base font-bold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              ₹{request.amount.toLocaleString()}
+              ₹{(request.amount || 0).toLocaleString()}
             </span>
           </div>
 
@@ -74,7 +78,7 @@ const RequestCard = ({ request, onClick, onAccept, onReschedule, onDecline }: Re
                 className="flex-1 h-10 rounded-xl gradient-primary text-primary-foreground font-semibold text-sm flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
               >
                 <CheckCircle2 className="h-4 w-4" />
-                Accept
+                Accept & Schedule
               </button>
               <button
                 onClick={(e) => {

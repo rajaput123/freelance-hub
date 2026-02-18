@@ -10,13 +10,14 @@ import RescheduleSheet from "@/components/RescheduleSheet";
 import PageHeader from "@/components/PageHeader";
 import { cn } from "@/lib/utils";
 import { ClipboardList, Inbox, Clock, Zap, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface RequestsPageProps {
   onMenuClick: () => void;
 }
 
 const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
-  const { jobs } = useAppData();
+  const { jobs, updateJobStatus } = useAppData();
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [selectedRequest, setSelectedRequest] = useState<Job | null>(null);
   const [showReschedule, setShowReschedule] = useState(false);
@@ -81,6 +82,11 @@ const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
       const acceptedJob = jobs.find(j => j.id === jobId);
       if (acceptedJob) {
         setSelectedJob(acceptedJob);
+        // Automatically open JobDetailSheet after a short delay to show next steps
+        setTimeout(() => {
+          // JobDetailSheet will open automatically because selectedJob is set
+          // This gives time for the tab switch animation to complete
+        }, 300);
       }
     }, 100);
   };
@@ -96,6 +102,13 @@ const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
   };
 
   const handleStartJob = (job: Job) => {
+    updateJobStatus(job.id, "in_progress");
+    toast.success("Job started! You can now track progress and add expenses.");
+    setTab("active");
+  };
+
+  const handleCompleteJob = (job: Job) => {
+    // Open JobExecutionSheet to add review, photos, etc. before completing
     setSelectedJob(job);
     setShowExecution(true);
   };
@@ -201,6 +214,8 @@ const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
                       setShowExecution(true);
                     }
                   }}
+                  onStartJob={job.status === "scheduled" ? () => handleStartJob(job) : undefined}
+                  onComplete={job.status === "in_progress" ? () => handleCompleteJob(job) : undefined}
                 />
               );
             }
@@ -244,9 +259,10 @@ const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
         onOpenChange={(open) => {
           setShowExecution(open);
           if (!open && selectedJob?.status === "completed") {
-            // Keep job selected to show payment prompt
+            // Job was completed, switch to completed tab
+            setTab("completed");
             setTimeout(() => {
-              // JobDetailSheet will handle payment prompt
+              setSelectedJob(null);
             }, 300);
           } else if (!open) {
             setSelectedJob(null);

@@ -1,6 +1,6 @@
 import { Job } from "@/data/types";
 import StatusBadge from "./StatusBadge";
-import { MapPin, Clock, Wallet } from "lucide-react";
+import { MapPin, Clock, Wallet, Play, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface JobCardProps {
@@ -8,9 +8,11 @@ interface JobCardProps {
   compact?: boolean;
   variant?: "default" | "compact" | "payment" | "active";
   onClick?: () => void;
+  onStartJob?: (e?: React.MouseEvent) => void;
+  onComplete?: (e?: React.MouseEvent) => void;
 }
 
-const JobCard = ({ job, compact = false, variant = "default", onClick }: JobCardProps) => {
+const JobCard = ({ job, compact = false, variant = "default", onClick, onStartJob, onComplete }: JobCardProps) => {
   const isPaid = job.paidAmount >= job.amount;
   const showDetails = !compact && variant !== "payment" && variant !== "compact";
 
@@ -52,8 +54,8 @@ const JobCard = ({ job, compact = false, variant = "default", onClick }: JobCard
           <Wallet className="h-6 w-6 text-warning" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className={cn("font-bold truncate mb-0.5", textSizes[variant].title)}>{job.clientName}</p>
-          <p className={cn("text-muted-foreground font-medium", textSizes[variant].service)}>{job.service}</p>
+          <p className={cn("font-bold truncate mb-0.5", textSizes[variant].title)}>{job.clientName || job.freelancerName || "Unknown"}</p>
+          <p className={cn("text-muted-foreground font-medium", textSizes[variant].service)}>{job.service || job.taskName || "Service"}</p>
         </div>
         <p className={cn("font-bold text-warning shrink-0", textSizes[variant].amount)} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
           ₹{pendingAmount.toLocaleString()}
@@ -77,11 +79,11 @@ const JobCard = ({ job, compact = false, variant = "default", onClick }: JobCard
           variant === "active" ? "gradient-primary text-primary-foreground shadow-md" : "gradient-primary text-primary-foreground shadow-md",
           "flex items-center justify-center font-bold shrink-0 mt-0.5"
         )}>
-          {job.clientName.charAt(0)}
+          {(job.clientName || job.freelancerName || "?").charAt(0).toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2 mb-1.5">
-            <p className={cn("font-bold text-foreground truncate", textSizes[variant].title)}>{job.clientName}</p>
+            <p className={cn("font-bold text-foreground truncate", textSizes[variant].title)}>{job.clientName || job.freelancerName || "Unknown"}</p>
             <StatusBadge status={job.status} />
           </div>
           <p className={cn("text-muted-foreground font-medium mb-2.5", textSizes[variant].service)}>{job.service}</p>
@@ -97,7 +99,7 @@ const JobCard = ({ job, compact = false, variant = "default", onClick }: JobCard
             </div>
           )}
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-3">
             <span className={cn("font-bold text-foreground", textSizes[variant].amount)} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               ₹{job.amount.toLocaleString()}
             </span>
@@ -108,6 +110,33 @@ const JobCard = ({ job, compact = false, variant = "default", onClick }: JobCard
               {isPaid ? "✓ Paid" : `₹${job.paidAmount.toLocaleString()} paid`}
             </span>
           </div>
+
+          {/* Action Buttons - Show for scheduled and in_progress jobs */}
+          {job.status === "scheduled" && onStartJob && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onStartJob(e);
+              }}
+              className="w-full h-10 rounded-xl gradient-primary text-primary-foreground font-semibold text-sm flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
+            >
+              <Play className="h-4 w-4" />
+              Start Job
+            </button>
+          )}
+
+          {job.status === "in_progress" && onComplete && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onComplete(e);
+              }}
+              className="w-full h-10 rounded-xl bg-success text-white font-semibold text-sm flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all hover:bg-success/90"
+            >
+              <CheckCircle className="h-4 w-4" />
+              Complete
+            </button>
+          )}
         </div>
       </div>
     </div>

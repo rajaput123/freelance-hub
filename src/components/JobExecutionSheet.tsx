@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Job, Material } from "@/data/types";
-import { Camera, CheckCircle, X } from "lucide-react";
+import { Camera, CheckCircle, X, MessageSquare } from "lucide-react";
 import { useAppData } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
@@ -15,10 +16,11 @@ interface JobExecutionSheetProps {
 }
 
 const JobExecutionSheet = ({ job, open, onOpenChange }: JobExecutionSheetProps) => {
-  const { updateJobStatus, addJobMaterials } = useAppData();
+  const { updateJobStatus, addJobMaterials, updateJobNotes } = useAppData();
   const { user } = useAuth();
   const [photos, setPhotos] = useState<string[]>([]);
   const [selectedMaterials, setSelectedMaterials] = useState<Material[]>(job?.materials || []);
+  const [review, setReview] = useState<string>("");
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   // Get service category from user's services
@@ -27,10 +29,10 @@ const JobExecutionSheet = ({ job, open, onOpenChange }: JobExecutionSheetProps) 
   useEffect(() => {
     if (job) {
       setSelectedMaterials(job.materials || []);
+      setReview(job.notes || "");
+      setPhotos([]); // Reset photos when job changes
     }
   }, [job]);
-
-  if (!job) return null;
 
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -50,28 +52,37 @@ const JobExecutionSheet = ({ job, open, onOpenChange }: JobExecutionSheetProps) 
     if (selectedMaterials.length > 0) {
       addJobMaterials(job.id, selectedMaterials);
     }
+    
+    // Save review/comment
+    if (review.trim()) {
+      updateJobNotes(job.id, review.trim());
+    }
+    
     updateJobStatus(job.id, "completed");
-    toast.success("Job completed!");
+    toast.success("Job completed with review!");
     onOpenChange(false);
   };
 
+  // NEVER return null - always render Sheet component
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open && !!job} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="rounded-t-3xl max-h-[90vh] overflow-y-auto border-0">
-        <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />
-        <SheetHeader>
-          <SheetTitle className="text-left text-base" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Execute Job
-          </SheetTitle>
-        </SheetHeader>
+        {job ? (
+          <>
+            <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />
+            <SheetHeader>
+              <SheetTitle className="text-left text-base" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                Complete Job & Add Review
+              </SheetTitle>
+            </SheetHeader>
 
-        <div className="mt-4 space-y-4">
-          {/* Job Info */}
-          <div className="bg-muted/50 rounded-2xl p-4">
-            <p className="font-bold text-sm mb-1">{job.clientName}</p>
-            <p className="text-xs text-muted-foreground">{job.service}</p>
-            <p className="text-xs text-muted-foreground mt-2">{job.location}</p>
-          </div>
+            <div className="mt-4 space-y-4">
+              {/* Job Info */}
+              <div className="bg-muted/50 rounded-2xl p-4">
+                <p className="font-bold text-sm mb-1">{job.clientName || job.freelancerName || "Unknown"}</p>
+                <p className="text-xs text-muted-foreground">{job.service || job.taskName || "Service"}</p>
+                <p className="text-xs text-muted-foreground mt-2">{job.location}</p>
+              </div>
 
           {/* Photos */}
           <div>
@@ -114,15 +125,37 @@ const JobExecutionSheet = ({ job, open, onOpenChange }: JobExecutionSheetProps) 
             serviceCategory={serviceCategory}
           />
 
-          {/* Complete Button */}
-          <Button
-            onClick={handleComplete}
-            className="w-full h-12 rounded-2xl gap-2 text-sm font-bold bg-success hover:bg-success/90 border-0"
-          >
-            <CheckCircle className="h-4 w-4" />
-            Mark Job Complete
-          </Button>
-        </div>
+          {/* Review/Comment Section */}
+          <div>
+            <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              Review / Comments
+            </label>
+            <Textarea
+              placeholder="Add your review, comments, or notes about the completed job..."
+              value={review}
+              onChange={(e) => setReview(e.target.value)}
+              className="rounded-xl text-sm min-h-[100px]"
+              rows={4}
+            />
+            <p className="text-xs text-muted-foreground mt-1">Share your experience, feedback, or any important notes about this job</p>
+          </div>
+
+              {/* Complete Button */}
+              <Button
+                onClick={handleComplete}
+                className="w-full h-12 rounded-2xl gap-2 text-sm font-bold bg-success hover:bg-success/90 border-0"
+              >
+                <CheckCircle className="h-4 w-4" />
+                Complete Job
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="p-8 text-center">
+            <p className="text-sm text-muted-foreground">No job selected</p>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );

@@ -6,6 +6,7 @@ import { Calendar, Clock, AlertTriangle } from "lucide-react";
 import { useAppData } from "@/context/AppContext";
 import { toast } from "sonner";
 import { useState, useMemo, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 interface RescheduleSheetProps {
   request: Job | null;
@@ -14,6 +15,8 @@ interface RescheduleSheetProps {
 }
 
 const RescheduleSheet = ({ request, open, onOpenChange }: RescheduleSheetProps) => {
+  // ALL hooks must ALWAYS be called in the same order on every render
+  // This is critical - hooks must be called unconditionally, before any returns
   const { updateJobStatus, updateJobSchedule, jobs } = useAppData();
   const [newDate, setNewDate] = useState(request?.date || "");
   const [newTime, setNewTime] = useState(request?.time || "");
@@ -26,36 +29,37 @@ const RescheduleSheet = ({ request, open, onOpenChange }: RescheduleSheetProps) 
     }
   }, [request, open]);
 
-  if (!request) return null;
-
-  // Check for conflicts
+  // Check for conflicts - must handle null request case
   const hasConflict = useMemo(() => {
-    if (!newDate || !newTime) return false;
+    if (!request || !newDate || !newTime) return false;
     const dayJobs = jobs.filter(j => j.date === newDate && j.status !== "pending" && j.status !== "cancelled" && j.id !== request.id);
     const [hour, minute] = newTime.split(":").map(Number);
     const checkTime = hour * 60 + minute;
 
     return dayJobs.some(job => {
+      if (!job.time) return false; // Skip jobs without time
       const [jobHour, jobMinute] = job.time.split(":").map(Number);
       const jobTime = jobHour * 60 + jobMinute;
       return Math.abs(checkTime - jobTime) < 60;
     });
-  }, [newDate, newTime, jobs, request.id]);
+  }, [newDate, newTime, jobs, request?.id]);
 
   const conflictingJobs = useMemo(() => {
-    if (!hasConflict || !newDate || !newTime) return [];
+    if (!request || !hasConflict || !newDate || !newTime) return [];
     const dayJobs = jobs.filter(j => j.date === newDate && j.status !== "pending" && j.status !== "cancelled" && j.id !== request.id);
     const [hour, minute] = newTime.split(":").map(Number);
     const checkTime = hour * 60 + minute;
 
     return dayJobs.filter(job => {
+      if (!job.time) return false; // Skip jobs without time
       const [jobHour, jobMinute] = job.time.split(":").map(Number);
       const jobTime = jobHour * 60 + jobMinute;
       return Math.abs(checkTime - jobTime) < 60;
     });
-  }, [hasConflict, newDate, newTime, jobs, request.id]);
+  }, [hasConflict, newDate, newTime, jobs, request?.id]);
 
   const handleReschedule = () => {
+    if (!request) return;
     if (!newDate || !newTime) {
       toast.error("Please select both date and time");
       return;
@@ -73,25 +77,29 @@ const RescheduleSheet = ({ request, open, onOpenChange }: RescheduleSheetProps) 
     onOpenChange(false);
   };
 
+  // NEVER return null - always render Sheet component
+  // Control visibility via open prop instead of conditional rendering
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet open={open && !!request} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="rounded-t-3xl max-h-[85vh] overflow-y-auto border-0 bg-background">
-        <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />
-        <SheetHeader>
-          <SheetTitle className="text-left text-base" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Reschedule Request
-          </SheetTitle>
-        </SheetHeader>
+        {request ? (
+          <>
+            <div className="w-10 h-1 bg-muted rounded-full mx-auto mb-4" />
+            <SheetHeader>
+              <SheetTitle className="text-left text-base" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                Reschedule Request
+              </SheetTitle>
+            </SheetHeader>
 
-        <div className="mt-4 space-y-4">
-          {/* Current Schedule */}
-          <div className="bg-muted/50 rounded-2xl p-4">
-            <p className="text-xs font-semibold text-muted-foreground mb-2">Current Schedule</p>
-            <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span>{request.date} at {request.time}</span>
-            </div>
-          </div>
+            <div className="mt-4 space-y-4">
+              {/* Current Schedule */}
+              <div className="bg-muted/50 rounded-2xl p-4">
+                <p className="text-xs font-semibold text-muted-foreground mb-2">Current Schedule</p>
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span>{request.date}{request.time ? ` at ${request.time}` : ""}</span>
+                </div>
+              </div>
 
           {/* New Schedule */}
           <div className="space-y-3">
@@ -131,7 +139,7 @@ const RescheduleSheet = ({ request, open, onOpenChange }: RescheduleSheetProps) 
                 <div className="flex-1">
                   <p className="text-xs font-semibold text-destructive mb-1">Schedule Conflict</p>
                   <p className="text-[10px] text-muted-foreground">
-                    This time overlaps with: {conflictingJobs.map(j => `${j.clientName} (${j.time})`).join(", ")}
+                    This time overlaps with: {conflictingJobs.map(j => `${j.clientName || j.freelancerName || "Unknown"} (${j.time || "No time"})`).join(", ")}
                   </p>
                 </div>
               </div>
@@ -150,6 +158,12 @@ const RescheduleSheet = ({ request, open, onOpenChange }: RescheduleSheetProps) 
             {hasConflict ? "Resolve Conflict First" : "Confirm Reschedule"}
           </Button>
         </div>
+          </>
+        ) : (
+          <div className="p-8 text-center">
+            <p className="text-sm text-muted-foreground">No request selected</p>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );
