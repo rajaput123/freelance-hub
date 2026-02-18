@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { ArrowRight, Loader2, Lock, CheckCircle2 } from "lucide-react";
+import { Loader2, Lock, CheckCircle2, ArrowRight } from "lucide-react";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const MPINSetupScreen = () => {
@@ -19,76 +18,80 @@ const MPINSetupScreen = () => {
     setMpin(value);
   };
 
-  const handleConfirmMpinComplete = async (value: string) => {
+  const handleConfirmMpinComplete = (value: string) => {
     setConfirmMpin(value);
-    if (value.length === 4 && mpin.length === 4) {
-      if (value === mpin) {
-        setIsLoading(true);
-        try {
-          // Save MPIN and complete onboarding
-          updateUser({ mpin });
-          completeOnboarding();
-          
-          // Clear session but keep user data in localStorage
-          // User will need to login with MPIN
-          setTimeout(() => {
-            // Clear user from context state but keep in localStorage
-            const storedUser = localStorage.getItem("freelancer_user");
-            if (storedUser) {
-              const userData = JSON.parse(storedUser);
-              // Ensure onboardingComplete is true
-              localStorage.setItem("freelancer_user", JSON.stringify({
-                ...userData,
-                onboardingComplete: true,
-                mpin: mpin
-              }));
-            }
-            // Clear from context (logout)
-            logout();
-            setShowThankYou(true);
-            setIsLoading(false);
-          }, 500);
-        } catch (error) {
-          toast.error("Something went wrong. Please try again.");
-          setIsLoading(false);
+  };
+
+  const handleSubmit = async () => {
+    if (mpin.length !== 4 || confirmMpin.length !== 4) {
+      toast.error("Please enter both MPIN and confirm MPIN");
+      return;
+    }
+
+    if (mpin !== confirmMpin) {
+      toast.error("MPINs do not match. Please try again.");
+      setMpin("");
+      setConfirmMpin("");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Save MPIN and complete onboarding
+      updateUser({ mpin });
+      completeOnboarding();
+      
+      // Show thank you screen first
+      setShowThankYou(true);
+      setIsLoading(false);
+      
+      // Then clear session after showing thank you
+      setTimeout(() => {
+        // Clear user from context state but keep in localStorage
+        const storedUser = localStorage.getItem("freelancer_user");
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          // Ensure onboardingComplete is true
+          localStorage.setItem("freelancer_user", JSON.stringify({
+            ...userData,
+            onboardingComplete: true,
+            mpin: mpin
+          }));
         }
-      } else {
-        toast.error("MPINs do not match. Please try again.");
-        setMpin("");
-        setConfirmMpin("");
-      }
+        // Clear from context (logout) - but keep thank you screen visible
+        logout();
+      }, 100);
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+      setIsLoading(false);
     }
   };
 
-  const handleGoToLogin = () => {
-    navigate("/login", { replace: true });
-  };
+  // Auto-redirect to login after showing success message
+  useEffect(() => {
+    if (showThankYou) {
+      const timer = setTimeout(() => {
+        navigate("/login", { replace: true });
+      }, 3000); // Redirect after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [showThankYou, navigate]);
 
   if (showThankYou) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
-        <div className="max-w-lg mx-auto text-center space-y-6">
+      <div className="min-h-screen bg-background flex items-center justify-center px-6 py-8">
+        <div className="max-w-lg w-full mx-auto text-center space-y-6">
           <div className="h-20 w-20 rounded-full gradient-primary flex items-center justify-center mx-auto shadow-glow">
             <CheckCircle2 className="h-10 w-10 text-primary-foreground" />
           </div>
           
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              Thank You!
+              Registration Successful!
             </h1>
             <p className="text-base text-muted-foreground">
               Your registration is complete. Please login to continue.
             </p>
-          </div>
-
-          <div className="pt-4">
-            <Button
-              onClick={handleGoToLogin}
-              className="w-full gradient-primary h-14 rounded-2xl text-primary-foreground font-bold text-base flex items-center justify-center gap-2 shadow-glow"
-            >
-              Go to Login
-              <ArrowRight className="h-5 w-5" />
-            </Button>
           </div>
         </div>
       </div>
@@ -171,6 +174,24 @@ const MPINSetupScreen = () => {
               </p>
             </div>
           </div>
+
+          <button
+            onClick={handleSubmit}
+            disabled={isLoading || mpin.length !== 4 || confirmMpin.length !== 4}
+            className="w-full gradient-primary h-14 rounded-2xl text-primary-foreground font-bold text-base flex items-center justify-center gap-2 shadow-glow active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-8"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Setting up...
+              </>
+            ) : (
+              <>
+                Complete Setup
+                <ArrowRight className="h-5 w-5" />
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

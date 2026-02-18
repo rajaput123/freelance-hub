@@ -36,12 +36,11 @@ const DocumentUpload = ({ documents, onDocumentsChange, requiredTypes = [] }: Do
 
   const getDocumentType = (fileName: string): string => {
     const lower = fileName.toLowerCase();
-    if (lower.includes("aadhar") || lower.includes("pan") || lower.includes("id") || lower.includes("idproof")) return "ID Proof";
-    if (lower.includes("address") || lower.includes("addressproof")) return "Address Proof";
-    if (lower.includes("agreement")) return "Agreement Copy";
-    if (lower.includes("bank")) return "Bank Details";
-    if (lower.includes("insurance")) return "Insurance";
-    return "Other Supporting Documents";
+    if (lower.includes("aadhar") || lower.includes("aadhaar") || lower.includes("uid")) return "Aadhar Card";
+    if (lower.includes("pan") || lower.includes("pancard")) return "PAN Card";
+    if (lower.includes("voter") || lower.includes("voterid") || lower.includes("epic")) return "Voter ID";
+    // Default to first type if not recognized
+    return "Aadhar Card";
   };
 
   const removeDocument = (id: string) => {

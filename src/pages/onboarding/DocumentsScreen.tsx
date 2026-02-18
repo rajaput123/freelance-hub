@@ -21,12 +21,9 @@ const DocumentsScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const documentTypes = [
-    "ID Proof",
-    "Address Proof",
-    "Agreement Copy",
-    "Bank Details",
-    "Insurance",
-    "Other Supporting Documents"
+    "Aadhar Card",
+    "PAN Card",
+    "Voter ID"
   ];
 
   const handleNext = async () => {
@@ -74,7 +71,7 @@ const DocumentsScreen = () => {
 
           <div className="bg-info/10 border border-info/20 rounded-xl p-4">
             <p className="text-xs text-info font-medium">
-              💡 Accepted: Aadhar, PAN, Driving License, Business License, GST Certificate
+              💡 Please upload Aadhar Card, PAN Card, and Voter ID
             </p>
           </div>
 

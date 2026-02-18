@@ -1,27 +1,11 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { ArrowRight, Loader2, Camera, Plus, X, Check } from "lucide-react";
+import { ArrowRight, Loader2, Camera, Plus, X } from "lucide-react";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-
-const serviceCategoryOptions = [
-  "Photography",
-  "Videography",
-  "Decoration",
-  "Floral Arrangement",
-  "Sound Engineering",
-  "Live Streaming",
-  "Graphic Design",
-  "Print Design",
-  "Consulting",
-  "Electrical Work",
-  "Lighting",
-  "Catering",
-];
 
 const availabilityOptions = [
   "Available",
@@ -47,7 +31,6 @@ const ProfileSetupScreen = () => {
   const [qualifications, setQualifications] = useState<string[]>(user?.qualifications || []);
   const [newQualification, setNewQualification] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<string | null>(user?.profilePhoto || null);
-  const [serviceCategories, setServiceCategories] = useState<string[]>(user?.serviceCategories || []);
   const [availability, setAvailability] = useState(user?.availability || "");
   const [pricingModel, setPricingModel] = useState(user?.pricingModel || "");
   const [equipmentProvided, setEquipmentProvided] = useState(user?.equipmentProvided || "");
@@ -78,14 +61,6 @@ const ProfileSetupScreen = () => {
     setQualifications(qualifications.filter((q) => q !== qual));
   };
 
-  const toggleServiceCategory = (category: string) => {
-    if (serviceCategories.includes(category)) {
-      setServiceCategories(serviceCategories.filter(c => c !== category));
-    } else {
-      setServiceCategories([...serviceCategories, category]);
-    }
-  };
-
   const handleNext = async () => {
     setIsLoading(true);
     try {
@@ -94,7 +69,6 @@ const ProfileSetupScreen = () => {
         skillsDescription: skillsDescription || undefined,
         qualifications,
         profilePhoto: profilePhoto || undefined,
-        serviceCategories: serviceCategories.length > 0 ? serviceCategories : undefined,
         availability: availability || undefined,
         pricingModel: pricingModel || undefined,
         equipmentProvided: equipmentProvided || undefined,
@@ -219,33 +193,6 @@ const ProfileSetupScreen = () => {
                   ))}
                 </div>
               )}
-            </div>
-
-            {/* Service Categories */}
-            <div>
-              <label className="text-sm font-semibold text-foreground mb-3 block">
-                Service Categories
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {serviceCategoryOptions.map((category) => (
-                  <button
-                    key={category}
-                    type="button"
-                    onClick={() => toggleServiceCategory(category)}
-                    className={cn(
-                      "h-12 rounded-xl border-2 text-sm font-medium flex items-center justify-center gap-2 transition-all",
-                      serviceCategories.includes(category)
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-border/50 bg-white text-foreground"
-                    )}
-                  >
-                    {serviceCategories.includes(category) && (
-                      <Check className="h-4 w-4" />
-                    )}
-                    {category}
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* Availability */}
