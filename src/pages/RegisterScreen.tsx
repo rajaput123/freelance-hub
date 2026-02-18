@@ -20,11 +20,6 @@ const RegisterScreen = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!phoneNumber || phoneNumber.length !== 10) {
-      toast.error("Please enter a valid 10-digit mobile number");
-      return;
-    }
-    
     setIsLoading(true);
     
     try {
@@ -70,12 +65,10 @@ const RegisterScreen = () => {
               <input
                 type="tel"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                placeholder="Enter 10-digit number"
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="Enter mobile number"
                 className="w-full pl-12 pr-4 h-14 bg-white rounded-xl border-2 border-border focus:border-primary focus:outline-none text-base"
                 autoFocus
-                maxLength={10}
-                required
               />
             </div>
           </div>
@@ -83,7 +76,7 @@ const RegisterScreen = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={isLoading || phoneNumber.length !== 10}
+            disabled={isLoading}
             className="w-full gradient-primary h-14 rounded-xl text-primary-foreground font-bold text-base flex items-center justify-center gap-2 shadow-glow active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-8"
           >
             {isLoading ? (

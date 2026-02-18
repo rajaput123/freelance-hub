@@ -20,17 +20,37 @@ const cities = [
   "Other",
 ];
 
+const states = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+  "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+  "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+  "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+  "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Other"
+];
+
+const countries = ["India", "Other"];
+
 const ServiceAreaScreen = () => {
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
+  const [addressLine, setAddressLine] = useState(user?.addressLine || "");
   const [city, setCity] = useState(user?.city || "");
-  const [coverageArea, setCoverageArea] = useState(user?.coverageArea || "");
+  const [state, setState] = useState(user?.state || "");
+  const [country, setCountry] = useState(user?.country || "India");
+  const [pincode, setPincode] = useState(user?.pincode || "");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleNext = async () => {
     setIsLoading(true);
     try {
-      updateUser({ city, coverageArea });
+      updateUser({ 
+        addressLine: addressLine || undefined,
+        city: city || undefined,
+        state: state || undefined,
+        country: country || undefined,
+        pincode: pincode || undefined,
+      });
       navigate("/onboarding/documents");
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
@@ -56,13 +76,27 @@ const ServiceAreaScreen = () => {
 
           <div className="space-y-5">
             <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                Address Line
+              </label>
+              <textarea
+                value={addressLine}
+                onChange={(e) => setAddressLine(e.target.value)}
+                placeholder="Enter address"
+                rows={3}
+                className="w-full bg-white rounded-2xl border-2 border-border/50 focus:border-primary focus:outline-none px-4 py-3 text-base font-medium shadow-sm resize-none"
+                autoFocus
+              />
+            </div>
+
+            <div>
               <label className="text-sm font-semibold text-foreground mb-2 block flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
                 City
               </label>
               <Select value={city} onValueChange={setCity}>
                 <SelectTrigger className="h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary text-base font-medium shadow-sm">
-                  <SelectValue placeholder="Select your city" />
+                  <SelectValue placeholder="Select city" />
                 </SelectTrigger>
                 <SelectContent>
                   {cities.map((cityName) => (
@@ -76,19 +110,52 @@ const ServiceAreaScreen = () => {
 
             <div>
               <label className="text-sm font-semibold text-foreground mb-2 block">
-                Coverage Area
+                State
+              </label>
+              <Select value={state} onValueChange={setState}>
+                <SelectTrigger className="h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary text-base font-medium shadow-sm">
+                  <SelectValue placeholder="Select state" />
+                </SelectTrigger>
+                <SelectContent>
+                  {states.map((stateName) => (
+                    <SelectItem key={stateName} value={stateName}>
+                      {stateName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                Country
+              </label>
+              <Select value={country} onValueChange={setCountry}>
+                <SelectTrigger className="h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary text-base font-medium shadow-sm">
+                  <SelectValue placeholder="Select country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {countries.map((countryName) => (
+                    <SelectItem key={countryName} value={countryName}>
+                      {countryName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                Pincode
               </label>
               <input
                 type="text"
-                value={coverageArea}
-                onChange={(e) => setCoverageArea(e.target.value)}
-                placeholder="e.g., South Mumbai, Central Delhi"
+                value={pincode}
+                onChange={(e) => setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                placeholder="Enter pincode"
+                maxLength={6}
                 className="w-full h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary focus:outline-none px-4 text-base font-medium shadow-sm"
-                autoFocus
               />
-              <p className="text-xs text-muted-foreground mt-2">
-                Specify the areas or neighborhoods where you provide services
-              </p>
             </div>
           </div>
 

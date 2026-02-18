@@ -7,6 +7,7 @@ import { AppProvider } from "@/context/AppContext";
 import { AuthProvider } from "@/context/AuthContext";
 import AuthenticatedLayout, { useSidebarControl } from "@/components/AuthenticatedLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import SplashScreen from "./pages/SplashScreen";
 import LoginScreen from "./pages/LoginScreen";
 import RegisterScreen from "./pages/RegisterScreen";
@@ -216,22 +217,24 @@ const AppLayout = () => {
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <AppProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/splash" element={<SplashScreen />} />
-              <Route path="/*" element={<AppLayout />} />
-            </Routes>
-          </BrowserRouter>
-        </AppProvider>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <AuthProvider>
+          <AppProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/splash" element={<SplashScreen />} />
+                <Route path="/*" element={<AppLayout />} />
+              </Routes>
+            </BrowserRouter>
+          </AppProvider>
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

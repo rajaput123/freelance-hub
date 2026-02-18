@@ -1,17 +1,57 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { ArrowRight, Loader2, Camera, Plus, X } from "lucide-react";
+import { ArrowRight, Loader2, Camera, Plus, X, Check } from "lucide-react";
 import ProgressIndicator from "@/components/ProgressIndicator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+
+const serviceCategoryOptions = [
+  "Photography",
+  "Videography",
+  "Decoration",
+  "Floral Arrangement",
+  "Sound Engineering",
+  "Live Streaming",
+  "Graphic Design",
+  "Print Design",
+  "Consulting",
+  "Electrical Work",
+  "Lighting",
+  "Catering",
+];
+
+const availabilityOptions = [
+  "Available",
+  "Busy",
+  "Not Available",
+  "Weekends Only",
+  "Weekdays Only",
+];
+
+const pricingModelOptions = [
+  "Hourly",
+  "Daily",
+  "Per Project",
+  "Per Event",
+  "Fixed Price",
+];
 
 const ProfileSetupScreen = () => {
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
   const [description, setDescription] = useState(user?.description || "");
+  const [skillsDescription, setSkillsDescription] = useState(user?.skillsDescription || "");
   const [qualifications, setQualifications] = useState<string[]>(user?.qualifications || []);
   const [newQualification, setNewQualification] = useState("");
   const [profilePhoto, setProfilePhoto] = useState<string | null>(user?.profilePhoto || null);
+  const [serviceCategories, setServiceCategories] = useState<string[]>(user?.serviceCategories || []);
+  const [availability, setAvailability] = useState(user?.availability || "");
+  const [pricingModel, setPricingModel] = useState(user?.pricingModel || "");
+  const [equipmentProvided, setEquipmentProvided] = useState(user?.equipmentProvided || "");
+  const [enablePortalAccess, setEnablePortalAccess] = useState(user?.enablePortalAccess || false);
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -38,13 +78,27 @@ const ProfileSetupScreen = () => {
     setQualifications(qualifications.filter((q) => q !== qual));
   };
 
+  const toggleServiceCategory = (category: string) => {
+    if (serviceCategories.includes(category)) {
+      setServiceCategories(serviceCategories.filter(c => c !== category));
+    } else {
+      setServiceCategories([...serviceCategories, category]);
+    }
+  };
+
   const handleNext = async () => {
     setIsLoading(true);
     try {
       updateUser({
         description,
+        skillsDescription: skillsDescription || undefined,
         qualifications,
         profilePhoto: profilePhoto || undefined,
+        serviceCategories: serviceCategories.length > 0 ? serviceCategories : undefined,
+        availability: availability || undefined,
+        pricingModel: pricingModel || undefined,
+        equipmentProvided: equipmentProvided || undefined,
+        enablePortalAccess: enablePortalAccess || undefined,
       });
       navigate("/onboarding/services");
     } catch (error) {
@@ -165,6 +219,115 @@ const ProfileSetupScreen = () => {
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Service Categories */}
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-3 block">
+                Service Categories
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {serviceCategoryOptions.map((category) => (
+                  <button
+                    key={category}
+                    type="button"
+                    onClick={() => toggleServiceCategory(category)}
+                    className={cn(
+                      "h-12 rounded-xl border-2 text-sm font-medium flex items-center justify-center gap-2 transition-all",
+                      serviceCategories.includes(category)
+                        ? "border-primary bg-primary/10 text-primary"
+                        : "border-border/50 bg-white text-foreground"
+                    )}
+                  >
+                    {serviceCategories.includes(category) && (
+                      <Check className="h-4 w-4" />
+                    )}
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Availability */}
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                Availability
+              </label>
+              <Select value={availability} onValueChange={setAvailability}>
+                <SelectTrigger className="h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary text-base font-medium shadow-sm">
+                  <SelectValue placeholder="Select availability" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availabilityOptions.map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {opt}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Pricing Model */}
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                Pricing Model
+              </label>
+              <Select value={pricingModel} onValueChange={setPricingModel}>
+                <SelectTrigger className="h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary text-base font-medium shadow-sm">
+                  <SelectValue placeholder="Select pricing" />
+                </SelectTrigger>
+                <SelectContent>
+                  {pricingModelOptions.map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {opt}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Equipment Provided */}
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                Equipment Provided
+              </label>
+              <textarea
+                value={equipmentProvided}
+                onChange={(e) => setEquipmentProvided(e.target.value)}
+                placeholder="Equipment details"
+                rows={3}
+                className="w-full bg-white rounded-2xl border-2 border-border/50 focus:border-primary focus:outline-none px-4 py-3 text-base font-medium shadow-sm resize-none"
+              />
+            </div>
+
+            {/* Skills / Services Description */}
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                Skills / Services Description
+              </label>
+              <textarea
+                value={skillsDescription}
+                onChange={(e) => setSkillsDescription(e.target.value)}
+                placeholder="Describe skills and services"
+                rows={4}
+                className="w-full bg-white rounded-2xl border-2 border-border/50 focus:border-primary focus:outline-none px-4 py-3 text-base font-medium shadow-sm resize-none"
+              />
+            </div>
+
+            {/* Portal Access */}
+            <div className="bg-muted/30 rounded-2xl p-4">
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                Portal Access & Login Credentials
+              </label>
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  checked={enablePortalAccess}
+                  onCheckedChange={(checked) => setEnablePortalAccess(checked === true)}
+                />
+                <span className="text-sm text-foreground">
+                  Enable Portal Access (Separate Freelancer Application)
+                </span>
+              </div>
             </div>
           </div>
 

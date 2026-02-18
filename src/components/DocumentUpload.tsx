@@ -36,10 +36,12 @@ const DocumentUpload = ({ documents, onDocumentsChange, requiredTypes = [] }: Do
 
   const getDocumentType = (fileName: string): string => {
     const lower = fileName.toLowerCase();
-    if (lower.includes("aadhar") || lower.includes("pan") || lower.includes("id")) return "Identity";
-    if (lower.includes("license") || lower.includes("certificate")) return "Certificate";
-    if (lower.includes("business") || lower.includes("gst")) return "Business";
-    return "Other";
+    if (lower.includes("aadhar") || lower.includes("pan") || lower.includes("id") || lower.includes("idproof")) return "ID Proof";
+    if (lower.includes("address") || lower.includes("addressproof")) return "Address Proof";
+    if (lower.includes("agreement")) return "Agreement Copy";
+    if (lower.includes("bank")) return "Bank Details";
+    if (lower.includes("insurance")) return "Insurance";
+    return "Other Supporting Documents";
   };
 
   const removeDocument = (id: string) => {
@@ -57,14 +59,62 @@ const DocumentUpload = ({ documents, onDocumentsChange, requiredTypes = [] }: Do
     );
   };
 
+  const handleFileSelectForType = (type: string) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".pdf,.jpg,.jpeg,.png";
+    input.onchange = (e: Event) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const newDoc: Document = {
+          id: `doc_${Date.now()}_${Math.random()}`,
+          type,
+          name: file.name,
+          url: URL.createObjectURL(file),
+          file,
+        };
+        onDocumentsChange([...documents, newDoc]);
+      }
+    };
+    input.click();
+  };
+
   return (
     <div className="space-y-4">
+      {/* Individual Document Upload Fields */}
+      {requiredTypes.length > 0 && (
+        <div className="grid grid-cols-2 gap-3">
+          {requiredTypes.map((type) => {
+            const existingDoc = documents.find(doc => doc.type === type);
+            return (
+              <div key={type} className="space-y-2">
+                <label className="text-xs font-semibold text-foreground block">{type}</label>
+                <button
+                  type="button"
+                  onClick={() => handleFileSelectForType(type)}
+                  className="w-full h-12 bg-white rounded-xl border-2 border-border/50 hover:border-primary/50 transition-colors flex items-center justify-between px-3 text-sm font-medium"
+                >
+                  <span className="text-muted-foreground">
+                    {existingDoc ? existingDoc.name : "Browse..."}
+                  </span>
+                  <Upload className="h-4 w-4 text-muted-foreground" />
+                </button>
+                {!existingDoc && (
+                  <p className="text-xs text-muted-foreground">No file selected.</p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* General Upload Area */}
       <div
         onClick={() => fileInputRef.current?.click()}
         className="border-2 border-dashed border-border/50 rounded-2xl p-8 text-center cursor-pointer hover:border-primary/50 transition-colors bg-muted/20"
       >
         <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-        <p className="text-sm font-semibold text-foreground mb-1">Upload Documents</p>
+        <p className="text-sm font-semibold text-foreground mb-1">Upload Additional Documents</p>
         <p className="text-xs text-muted-foreground">Tap to select files (PDF, JPG, PNG)</p>
         <input
           ref={fileInputRef}

@@ -30,6 +30,14 @@ export interface Job {
   materials: Material[];
   expenses: number;
   convertedToEventId?: string;
+  // Assignment fields
+  freelancerId?: string;
+  freelancerName?: string;
+  eventId?: string;
+  linkedStructure?: string;
+  duration?: string; // e.g., "2 days", "1 week"
+  taskName?: string;
+  taskDescription?: string;
 }
 
 export interface EventTask {

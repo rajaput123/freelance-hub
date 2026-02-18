@@ -3,26 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowRight, Loader2 } from "lucide-react";
 import ProgressIndicator from "@/components/ProgressIndicator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-
-const workCategories = [
-  "Plumbing",
-  "Electrical",
-  "Carpentry",
-  "Painting",
-  "Cleaning",
-  "Gardening",
-  "Appliance Repair",
-  "Other",
-];
 
 const BasicInfoScreen = () => {
   const navigate = useNavigate();
   const { user, updateUser, isAuthenticated } = useAuth();
-  const [name, setName] = useState(user?.name || "");
-  const [workCategory, setWorkCategory] = useState(user?.workCategory || "");
   const [businessName, setBusinessName] = useState(user?.businessName || "");
+  const [contactPersonName, setContactPersonName] = useState(user?.contactPersonName || "");
+  const [mobile, setMobile] = useState(user?.phone || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [gstNumber, setGstNumber] = useState(user?.gstNumber || "");
+  const [panNumber, setPanNumber] = useState(user?.panNumber || "");
   const [isLoading, setIsLoading] = useState(false);
 
   // Redirect if onboarding is already complete
@@ -33,18 +24,16 @@ const BasicInfoScreen = () => {
   }, [isAuthenticated, user, navigate]);
 
   const handleNext = async () => {
-    if (!name.trim()) {
-      toast.error("Please enter your name");
-      return;
-    }
-    if (!workCategory) {
-      toast.error("Please select your work category");
-      return;
-    }
-    
     setIsLoading(true);
     try {
-      updateUser({ name, workCategory, businessName: businessName || undefined });
+      updateUser({ 
+        businessName: businessName || undefined,
+        contactPersonName: contactPersonName || undefined,
+        phone: mobile || undefined,
+        email: email || undefined,
+        gstNumber: gstNumber || undefined,
+        panNumber: panNumber || undefined,
+      });
       navigate("/onboarding/service-area");
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
@@ -71,13 +60,13 @@ const BasicInfoScreen = () => {
           <div className="space-y-5">
             <div>
               <label className="text-sm font-semibold text-foreground mb-2 block">
-                Full Name
+                Business Name / Freelancer Name <span className="text-xs text-muted-foreground">(Optional)</span>
               </label>
               <input
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your full name"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                placeholder="Enter business name (optional)"
                 className="w-full h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary focus:outline-none px-4 text-base font-medium shadow-sm"
                 autoFocus
               />
@@ -85,31 +74,65 @@ const BasicInfoScreen = () => {
 
             <div>
               <label className="text-sm font-semibold text-foreground mb-2 block">
-                Work Category
+                Contact Person Name <span className="text-xs text-muted-foreground">(Optional)</span>
               </label>
-              <Select value={workCategory} onValueChange={setWorkCategory}>
-                <SelectTrigger className="h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary text-base font-medium shadow-sm">
-                  <SelectValue placeholder="Select your work category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {workCategories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <input
+                type="text"
+                value={contactPersonName}
+                onChange={(e) => setContactPersonName(e.target.value)}
+                placeholder="Enter contact name (optional)"
+                className="w-full h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary focus:outline-none px-4 text-base font-medium shadow-sm"
+              />
             </div>
 
             <div>
               <label className="text-sm font-semibold text-foreground mb-2 block">
-                Business Name <span className="text-xs text-muted-foreground">(Optional)</span>
+                Mobile <span className="text-xs text-muted-foreground">(Optional)</span>
+              </label>
+              <input
+                type="tel"
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
+                placeholder="+91 XXXXX XXXXX (optional)"
+                className="w-full h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary focus:outline-none px-4 text-base font-medium shadow-sm"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                Email
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email@example.com"
+                className="w-full h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary focus:outline-none px-4 text-base font-medium shadow-sm"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                GST Number <span className="text-xs text-muted-foreground">(Optional)</span>
               </label>
               <input
                 type="text"
-                value={businessName}
-                onChange={(e) => setBusinessName(e.target.value)}
-                placeholder="Enter your business name"
+                value={gstNumber}
+                onChange={(e) => setGstNumber(e.target.value)}
+                placeholder="Optional"
+                className="w-full h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary focus:outline-none px-4 text-base font-medium shadow-sm"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-foreground mb-2 block">
+                PAN Number <span className="text-xs text-muted-foreground">(Optional)</span>
+              </label>
+              <input
+                type="text"
+                value={panNumber}
+                onChange={(e) => setPanNumber(e.target.value)}
+                placeholder="Optional"
                 className="w-full h-14 bg-white rounded-2xl border-2 border-border/50 focus:border-primary focus:outline-none px-4 text-base font-medium shadow-sm"
               />
             </div>
@@ -117,7 +140,7 @@ const BasicInfoScreen = () => {
 
           <button
             onClick={handleNext}
-            disabled={isLoading || !name.trim() || !workCategory}
+            disabled={isLoading}
             className="w-full gradient-primary h-14 rounded-2xl text-primary-foreground font-bold text-base flex items-center justify-center gap-2 shadow-glow active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-8"
           >
             {isLoading ? (

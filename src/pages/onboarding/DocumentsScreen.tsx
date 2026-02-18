@@ -20,7 +20,14 @@ const DocumentsScreen = () => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const requiredTypes = ["Identity", "Business"];
+  const documentTypes = [
+    "ID Proof",
+    "Address Proof",
+    "Agreement Copy",
+    "Bank Details",
+    "Insurance",
+    "Other Supporting Documents"
+  ];
 
   const handleNext = async () => {
     setIsLoading(true);
@@ -62,7 +69,7 @@ const DocumentsScreen = () => {
           <DocumentUpload
             documents={documents}
             onDocumentsChange={setDocuments}
-            requiredTypes={requiredTypes}
+            requiredTypes={documentTypes}
           />
 
           <div className="bg-info/10 border border-info/20 rounded-xl p-4">

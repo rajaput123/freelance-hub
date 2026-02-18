@@ -71,6 +71,20 @@ const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
     setShowReschedule(false); // Ensure reschedule sheet is closed
   };
 
+  const handleRequestAccepted = (jobId: string) => {
+    // Use setTimeout to defer state updates and avoid hooks order issues
+    setTimeout(() => {
+      // Switch to Scheduled tab
+      setTab("scheduled");
+      
+      // Find and select the accepted job
+      const acceptedJob = jobs.find(j => j.id === jobId);
+      if (acceptedJob) {
+        setSelectedJob(acceptedJob);
+      }
+    }, 100);
+  };
+
   const handleReschedule = (request: Job) => {
     setSelectedRequest(request);
     setShowReschedule(true);
@@ -204,6 +218,7 @@ const RequestsPage = ({ onMenuClick }: RequestsPageProps) => {
         onReschedule={() => {
           setShowReschedule(true);
         }}
+        onAccepted={handleRequestAccepted}
       />
 
       <RescheduleSheet
